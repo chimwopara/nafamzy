@@ -12,10 +12,19 @@
     <style>
         :root {
             --accent-blue: #007AFF;
-            --text-primary: #1d1d1f;
-            --text-secondary: #86868b;
-            --background: #ffffff;
-            --surface: #f5f5f7;
+            --accent-blue-dark: #0A84FF;
+            --text-primary-light: #1d1d1f;
+            --text-secondary-light: #86868b;
+            --text-primary-dark: #f2f2f7;
+            --text-secondary-dark: #8e8e93;
+            --background-light: #ffffff;
+            --background-dark: #000000;
+            --surface-light: #f5f5f7;
+            --surface-dark: #1c1c1e;
+            --border-light: #d2d2d7;
+            --border-dark: #38383a;
+            --glass-light: rgba(255, 255, 255, 0.8);
+            --glass-dark: rgba(28, 28, 30, 0.8);
         }
         
         * {
@@ -24,40 +33,52 @@
             box-sizing: border-box;
         }
         
+        /* Base theme - light mode */
         body {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-            background: #ffffff;
-            color: #1d1d1f;
+            background: var(--background-light);
+            color: var(--text-primary-light);
             overflow-x: hidden;
             line-height: 1.6;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        /* Dark mode */
+        @media (prefers-color-scheme: dark) {
+            body {
+                background: var(--background-dark);
+                color: var(--text-primary-dark);
+            }
         }
 
         /* 3D Scene Container */
-        #hero-3d {
-            position: absolute;
-            top: 0;
-            left: 0;
+        .three-container {
             width: 100%;
-            height: 100%;
-            z-index: 2;
-            pointer-events: none;
+            height: 70vh;
+            cursor: grab;
+        }
+        .three-container:active {
+            cursor: grabbing;
         }
 
-        #hero-3d canvas {
-            position: absolute !important;
-            top: 0;
-            left: 0;
-        }
 
-        /* Apple-style glassmorphism */
+        /* Responsive glassmorphism with proper contrast */
         .glass {
-            background: rgba(0, 0, 0, 0.1);
+            background: var(--glass-light);
             backdrop-filter: saturate(180%) blur(20px);
             -webkit-backdrop-filter: saturate(180%) blur(20px);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+            transition: background-color 0.3s ease, border-color 0.3s ease;
         }
 
-        /* Smooth scroll progress */
+        @media (prefers-color-scheme: dark) {
+            .glass {
+                background: var(--glass-dark);
+                border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            }
+        }
+
+        /* Scroll indicator with theme awareness */
         .scroll-indicator {
             position: fixed;
             top: 0;
@@ -69,7 +90,13 @@
             transition: width 0.1s ease;
         }
 
-        /* Apple-style buttons */
+        @media (prefers-color-scheme: dark) {
+            .scroll-indicator {
+                background: var(--accent-blue-dark);
+            }
+        }
+
+        /* Adaptive buttons with proper contrast */
         .btn-primary {
             background: var(--accent-blue);
             color: white;
@@ -86,6 +113,12 @@
         .btn-primary:hover {
             transform: scale(1.02);
             filter: brightness(1.1);
+        }
+
+        @media (prefers-color-scheme: dark) {
+            .btn-primary {
+                background: var(--accent-blue-dark);
+            }
         }
 
         .btn-secondary {
@@ -107,13 +140,25 @@
             transform: scale(1.02);
         }
 
-        /* Typography */
+        @media (prefers-color-scheme: dark) {
+            .btn-secondary {
+                color: var(--accent-blue-dark);
+                border-color: var(--accent-blue-dark);
+            }
+            
+            .btn-secondary:hover {
+                background: var(--accent-blue-dark);
+                color: white;
+            }
+        }
+
+        /* Typography with proper contrast */
         .hero-title {
             font-size: clamp(2.5rem, 8vw, 6rem);
             font-weight: 700;
             line-height: 1.1;
             letter-spacing: -0.02em;
-            color: white;
+            color: white; /* Always white on hero background */
         }
 
         .section-title {
@@ -121,45 +166,74 @@
             font-weight: 700;
             line-height: 1.2;
             letter-spacing: -0.01em;
-            color: #1f2937; /* Force dark color */
+            color: var(--text-primary-light);
+            transition: color 0.3s ease;
         }
 
-        /* Override any inherited text colors */
-        .bg-gray-50 .section-title,
-        .bg-white .section-title,
-        section:not(.hero) h3,
-        section:not(.hero) h4 {
-            color: #1f2937 !important;
+        @media (prefers-color-scheme: dark) {
+            .section-title {
+                color: var(--text-primary-dark);
+            }
         }
 
-        /* Ensure hero section text stays white */
-        .hero-section h2,
-        .hero-section p,
-        section:first-of-type h2,
-        section:first-of-type p {
-            color: white !important;
+        /* Section backgrounds with proper contrast */
+        .section-light {
+            background: var(--background-light);
+            transition: background-color 0.3s ease;
         }
 
-        /* Card animations */
+        .section-surface {
+            background: var(--surface-light);
+            transition: background-color 0.3s ease;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            .section-light {
+                background: var(--background-dark);
+            }
+            
+            .section-surface {
+                background: var(--surface-dark);
+            }
+        }
+
+        /* Card styles with proper contrast */
         .feature-card {
-            background: #ffffff;
+            background: var(--background-light);
             border-radius: 18px;
             padding: 2rem;
             transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-            border: 1px solid #e5e5e7;
+            border: 1px solid var(--border-light);
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
         }
 
         .feature-card:hover {
             transform: translateY(-8px);
             box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
-            border-color: rgba(0, 122, 255, 0.2);
+            border-color: var(--accent-blue);
+        }
+
+        @media (prefers-color-scheme: dark) {
+            .feature-card {
+                background: var(--surface-dark);
+                border-color: var(--border-dark);
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            }
+            
+            .feature-card:hover {
+                box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+                border-color: var(--accent-blue-dark);
+            }
         }
 
         /* Goal selection cards */
         .goal-card {
             transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
             cursor: pointer;
+            background: var(--background-light);
+            border-radius: 18px;
+            overflow: hidden;
+            border: 1px solid var(--border-light);
         }
 
         .goal-card:hover {
@@ -168,30 +242,81 @@
         }
 
         @media (prefers-color-scheme: dark) {
+            .goal-card {
+                background: var(--surface-dark);
+                border-color: var(--border-dark);
+            }
+            
             .goal-card:hover {
-                box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
+                box-shadow: 0 25px 50px rgba(0, 0, 0, 0.6);
             }
         }
 
-        /* Parallax sections */
-        .parallax-section {
-            position: relative;
-            overflow: hidden;
+        /* Header adaptation for different backgrounds */
+        .header-light {
+            background: var(--glass-light);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .header-light h1,
+        .header-light nav a {
+            color: var(--text-primary-light) !important;
+        }
+        
+        /* Critical: Mobile menu button contrast fix */
+        .header-light #mobile-menu-button {
+            color: var(--text-primary-light) !important;
+        }
+        
+        .header-light .mobile-menu {
+            background: var(--glass-light);
+            border-top: 1px solid rgba(0, 0, 0, 0.1);
+        }
+        
+        .header-light .mobile-menu a {
+            color: var(--text-primary-light) !important;
         }
 
-        /* Reveal animations */
-        .reveal {
-            opacity: 0;
-            transform: translateY(30px);
-            transition: all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        @media (prefers-color-scheme: dark) {
+            .header-light {
+                background: var(--glass-dark);
+                border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            }
+            
+            .header-light h1,
+            .header-light nav a,
+            .header-light #mobile-menu-button {
+                color: var(--text-primary-dark) !important;
+            }
+            
+            .header-light .mobile-menu {
+                background: var(--glass-dark);
+                border-top: 1px solid rgba(255, 255, 255, 0.1);
+            }
+            
+            .header-light .mobile-menu a {
+                color: var(--text-primary-dark) !important;
+            }
         }
 
-        .reveal.visible {
-            opacity: 1;
-            transform: translateY(0);
+        /* Default header (over hero) */
+        .header-default h1,
+        .header-default nav a,
+        .header-default #mobile-menu-button {
+            color: white !important;
         }
 
-        /* Apple-style modal */
+        .header-default .mobile-menu {
+            background: rgba(0, 0, 0, 0.9);
+            border-top: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .header-default .mobile-menu a {
+            color: rgba(255, 255, 255, 0.9) !important;
+        }
+
+        /* Modal improvements */
         .modal {
             position: fixed;
             inset: 0;
@@ -206,56 +331,146 @@
         }
 
         .modal-content {
-            background: var(--background);
+            background: var(--background-light);
+            color: var(--text-primary-light);
             border-radius: 18px;
             padding: 2rem;
             max-width: 500px;
             width: 100%;
             box-shadow: 0 25px 50px rgba(0, 0, 0, 0.25);
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            border: 1px solid var(--border-light);
+            transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
         }
 
-        /* Form styling */
+        @media (prefers-color-scheme: dark) {
+            .modal-content {
+                background: var(--surface-dark);
+                color: var(--text-primary-dark);
+                border-color: var(--border-dark);
+            }
+        }
+
+        /* Form styling with proper contrast */
         .form-input {
             width: 100%;
             padding: 12px 16px;
-            border: 1px solid #d2d2d7;
+            border: 1px solid var(--border-light);
             border-radius: 12px;
-            background: var(--surface);
-            color: var(--text-primary);
+            background: var(--surface-light);
+            color: var(--text-primary-light);
             font-size: 16px;
-            transition: border-color 0.2s ease;
+            transition: all 0.3s ease;
         }
 
         .form-input:focus {
             outline: none;
             border-color: var(--accent-blue);
+            box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.1);
         }
 
         @media (prefers-color-scheme: dark) {
             .form-input {
-                border-color: #424245;
+                border-color: var(--border-dark);
+                background: var(--background-dark);
+                color: var(--text-primary-dark);
+            }
+            
+            .form-input:focus {
+                border-color: var(--accent-blue-dark);
+                box-shadow: 0 0 0 3px rgba(10, 132, 255, 0.2);
             }
         }
 
-        /* Header color transitions */
-        .header-light {
-            transition: all 0.3s ease;
+        /* Text color utilities */
+        .text-adaptive {
+            color: var(--text-primary-light);
+            transition: color 0.3s ease;
         }
-        
-        .header-light h1,
-        .header-light nav a,
-        .header-light button {
-            color: #1d1d1f !important;
+
+        .text-adaptive-secondary {
+            color: var(--text-secondary-light);
+            transition: color 0.3s ease;
         }
-        
-        .header-light .mobile-menu a {
-            color: #1d1d1f !important;
+
+        @media (prefers-color-scheme: dark) {
+            .text-adaptive {
+                color: var(--text-primary-dark);
+            }
+            
+            .text-adaptive-secondary {
+                color: var(--text-secondary-dark);
+            }
         }
-        
-        .header-light {
-            background: rgba(255, 255, 255, 0.9);
-            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+
+        /* Reveal animations */
+        .reveal {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+
+        .reveal.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Page transitions */
+        .page-transition {
+            opacity: 0;
+            animation: fadeIn 0.8s ease-out forwards;
+        }
+
+        @keyframes fadeIn {
+            to { opacity: 1; }
+        }
+
+        /* Stats counter */
+        .stat-number {
+            font-variant-numeric: tabular-nums;
+            color: var(--accent-blue);
+            transition: color 0.3s ease;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            .stat-number {
+                color: var(--accent-blue-dark);
+            }
+        }
+
+        /* Icon containers with adaptive colors */
+        .icon-container-blue {
+            background: rgba(0, 122, 255, 0.1);
+            color: var(--accent-blue);
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        .icon-container-green {
+            background: rgba(52, 199, 89, 0.1);
+            color: #34c759;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        .icon-container-purple {
+            background: rgba(175, 82, 222, 0.1);
+            color: #af52de;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            .icon-container-blue {
+                background: rgba(10, 132, 255, 0.15);
+                color: var(--accent-blue-dark);
+            }
+            
+            .icon-container-green {
+                background: rgba(52, 199, 89, 0.15);
+                color: #30d158;
+            }
+            
+            .icon-container-purple {
+                background: rgba(191, 90, 242, 0.15);
+                color: #bf5af2;
+            }
         }
 
         /* Responsive adjustments */
@@ -268,47 +483,6 @@
                 transform: none;
             }
         }
-
-        /* Loading state for 3D models */
-        .model-loading {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            color: rgba(255, 255, 255, 0.8);
-            font-size: 14px;
-            background: rgba(0, 0, 0, 0.5);
-            padding: 8px 16px;
-            border-radius: 20px;
-            backdrop-filter: blur(10px);
-        }
-
-        /* Smooth page transitions */
-        .page-transition {
-            opacity: 0;
-            animation: fadeIn 0.8s ease-out forwards;
-        }
-
-        @keyframes fadeIn {
-            to { opacity: 1; }
-        }
-
-        /* Navigation */
-        nav a {
-            color: var(--text-primary);
-            text-decoration: none;
-            font-weight: 400;
-            transition: color 0.2s ease;
-        }
-
-        nav a:hover {
-            color: var(--accent-blue);
-        }
-
-        /* Stats counter animation */
-        .stat-number {
-            font-variant-numeric: tabular-nums;
-        }
     </style>
 </head>
 <body class="page-transition">
@@ -316,29 +490,31 @@
     <div class="scroll-indicator"></div>
 
     <!-- Header -->
-    <header class="fixed top-0 left-0 right-0 z-50 glass">
+    <header class="fixed top-0 left-0 right-0 z-50 glass header-default">
         <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
-            <h1 class="text-xl font-semibold text-white">Nafamzy</h1>
+            <h1 class="text-xl font-semibold">Nafamzy</h1>
             <nav class="hidden md:flex space-x-8">
-                <a href="#services" class="text-white/80 hover:text-white transition">Services</a>
-                <a href="#network" class="text-white/80 hover:text-white transition">Network</a>
-                <a href="#pricing" class="text-white/80 hover:text-white transition">Get Started</a>
-                <a href="#contact" class="text-white/80 hover:text-white transition">Contact</a>
+                <a href="#services" class="hover:opacity-80 transition">Services</a>
+                <a href="#network" class="hover:opacity-80 transition">Network</a>
+                <a href="#pricing" class="hover:opacity-80 transition">Get Started</a>
+                <a href="#contact" class="hover:opacity-80 transition">Contact</a>
             </nav>
             <a href="#pricing" class="hidden md:block btn-primary">Book Strategy Call</a>
-            <button id="mobile-menu-button" class="md:hidden text-white">
+            <button id="mobile-menu-button" class="md:hidden transition-colors duration-300">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path>
                 </svg>
             </button>
         </div>
         <!-- Mobile Menu -->
-        <div id="mobile-menu" class="hidden md:hidden px-6 pb-4 border-t border-white/20">
-            <a href="#services" class="block py-3 text-white/80 hover:text-white transition">Services</a>
-            <a href="#network" class="block py-3 text-white/80 hover:text-white transition">Network</a>
-            <a href="#pricing" class="block py-3 text-white/80 hover:text-white transition">Get Started</a>
-            <a href="#contact" class="block py-3 text-white/80 hover:text-white transition">Contact</a>
-            <a href="#pricing" class="mt-3 btn-primary text-center block">Book Strategy Call</a>
+        <div id="mobile-menu" class="hidden md:hidden mobile-menu">
+            <div class="px-6 pb-4">
+                <a href="#services" class="block py-3 hover:opacity-80 transition">Services</a>
+                <a href="#network" class="block py-3 hover:opacity-80 transition">Network</a>
+                <a href="#pricing" class="block py-3 hover:opacity-80 transition">Get Started</a>
+                <a href="#contact" class="block py-3 hover:opacity-80 transition">Contact</a>
+                <a href="#pricing" class="mt-3 btn-primary text-center block">Book Strategy Call</a>
+            </div>
         </div>
     </header>
 
@@ -352,11 +528,8 @@
             allow="autoplay; encrypted-media">
         </iframe>
         <div class="absolute inset-0 bg-gradient-radial from-black/20 via-black/40 to-black/70 z-1"></div>
-        <div id="hero-3d" class="absolute inset-0 z-2">
-            <div class="model-loading">Loading 3D models...</div>
-        </div>
         <div class="relative z-10 text-center px-6 max-w-4xl mx-auto text-white">
-            <h2 class="hero-title mb-6 text-white">
+            <h2 class="hero-title mb-6">
                 Elevate Your <br>
                 <span style="color: #007AFF;">Digital Presence</span>
             </h2>
@@ -371,60 +544,66 @@
     </section>
 
     <!-- Services Section -->
-    <section id="services" class="py-24 bg-gray-50">
+    <section id="services" class="py-24 section-surface">
         <div class="max-w-7xl mx-auto px-6">
             <div class="text-center mb-16 reveal">
                 <h3 class="section-title mb-4">Our Core Disciplines</h3>
-                <p class="text-xl text-gray-600 max-w-2xl mx-auto">
+                <p class="text-xl text-adaptive-secondary max-w-2xl mx-auto">
                     Comprehensive solutions designed for maximum impact and measurable results.
                 </p>
             </div>
             
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div class="max-w-3xl mx-auto space-y-24">
                 <!-- Social Media Management -->
-                <div class="feature-card reveal">
-                    <div class="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center mb-6">
-                        <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div class="feature-card reveal text-center">
+                    <div class="w-12 h-12 icon-container-blue rounded-xl flex items-center justify-center mb-6 mx-auto">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
                         </svg>
                     </div>
-                    <h4 class="text-xl font-semibold mb-3">Social Media Management</h4>
-                    <p class="text-gray-600 mb-6">
+                    <h4 class="text-xl font-semibold mb-3 text-adaptive">Social Media Management</h4>
+                    <p class="text-adaptive-secondary mb-6">
                         End-to-end management of your social channels with strategic content creation, community engagement, and performance analytics.
                     </p>
-                    <div class="text-sm text-blue-600 font-medium">
+                    <div class="text-sm font-medium stat-number">
                         Strategy • Content • Analytics
                     </div>
                 </div>
 
+                <!-- 3D Model 1: Drone -->
+                <div id="drone-container" class="three-container reveal"></div>
+
                 <!-- Performance Marketing -->
-                <div class="feature-card reveal" style="transition-delay: 0.1s;">
-                    <div class="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center mb-6">
-                        <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div class="feature-card reveal text-center" style="transition-delay: 0.1s;">
+                    <div class="w-12 h-12 icon-container-green rounded-xl flex items-center justify-center mb-6 mx-auto">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
                         </svg>
                     </div>
-                    <h4 class="text-xl font-semibold mb-3">Performance Marketing</h4>
-                    <p class="text-gray-600 mb-6">
+                    <h4 class="text-xl font-semibold mb-3 text-adaptive">Performance Marketing</h4>
+                    <p class="text-adaptive-secondary mb-6">
                         Data-driven advertising campaigns optimized for conversions, lead generation, and brand awareness across all platforms.
                     </p>
-                    <div class="text-sm text-green-600 font-medium">
+                    <div class="text-sm font-medium" style="color: #34c759;">
                         ROI Focused • Multi-Platform • AI-Powered
                     </div>
                 </div>
 
+                 <!-- 3D Model 2: Camera -->
+                <div id="camera-container" class="three-container reveal"></div>
+
                 <!-- Event Media Coverage -->
-                <div class="feature-card reveal" style="transition-delay: 0.2s;">
-                    <div class="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center mb-6">
-                        <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div class="feature-card reveal text-center" style="transition-delay: 0.2s;">
+                    <div class="w-12 h-12 icon-container-purple rounded-xl flex items-center justify-center mb-6 mx-auto">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
                         </svg>
                     </div>
-                    <h4 class="text-xl font-semibold mb-3">Event Media Coverage</h4>
-                    <p class="text-gray-600 mb-6">
+                    <h4 class="text-xl font-semibold mb-3 text-adaptive">Event Media Coverage</h4>
+                    <p class="text-adaptive-secondary mb-6">
                         Professional event documentation with cinematic videography, live streaming, and comprehensive media packages.
                     </p>
-                    <div class="text-sm text-purple-600 font-medium">
+                    <div class="text-sm font-medium" style="color: #af52de;">
                         Cinema Quality • Live Streaming • 360° Coverage
                     </div>
                 </div>
@@ -433,7 +612,7 @@
     </section>
 
     <!-- Network Section -->
-    <section id="network" class="py-24 parallax-section bg-white">
+    <section id="network" class="py-24 parallax-section section-light">
         <div class="max-w-7xl mx-auto px-6">
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
                 <div class="reveal">
@@ -443,19 +622,19 @@
                          onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=800&h=600&fit=crop&crop=faces';">
                 </div>
                 <div class="reveal" style="transition-delay: 0.2s;">
-                    <h3 class="section-title mb-6" style="color: #1f2937 !important;">The Power of the Network</h3>
-                    <p class="text-xl text-gray-600 mb-8 leading-relaxed">
+                    <h3 class="section-title mb-6">The Power of the Network</h3>
+                    <p class="text-xl text-adaptive-secondary mb-8 leading-relaxed">
                         Nafamzy isn't just an agency—it's an exclusive ecosystem of rigorously vetted, certified social media professionals. When you partner with us, you gain access to a dedicated team of specialists perfectly matched to your brand's unique needs.
                     </p>
                     
                     <div class="grid grid-cols-2 gap-6 mb-8">
                         <div class="text-center">
-                            <div class="text-3xl font-bold text-blue-600 stat-number" data-target="500">0</div>
-                            <div class="text-gray-600">Vetted Professionals</div>
+                            <div class="text-3xl font-bold stat-number" data-target="500">0</div>
+                            <div class="text-adaptive-secondary">Vetted Professionals</div>
                         </div>
                         <div class="text-center">
-                            <div class="text-3xl font-bold text-blue-600 stat-number" data-target="98">0</div>
-                            <div class="text-gray-600">Client Satisfaction</div>
+                            <div class="text-3xl font-bold stat-number" data-target="98">0</div>
+                            <div class="text-adaptive-secondary">Client Satisfaction</div>
                         </div>
                     </div>
                     
@@ -465,18 +644,18 @@
         </div>
     </section>
 
-    <!-- Pricing Section - Apple Style Product Introduction -->
-    <section id="pricing" class="py-32 bg-white relative overflow-hidden">
+    <!-- Pricing Section -->
+    <section id="pricing" class="py-32 section-light relative overflow-hidden">
         <div class="max-w-6xl mx-auto px-6">
             <!-- Hero Introduction -->
             <div class="text-center mb-24 reveal">
-                <h3 class="text-6xl md:text-8xl font-bold mb-8 leading-tight" style="color: #1f2937 !important;">
+                <h3 class="text-6xl md:text-8xl font-bold mb-8 leading-tight section-title">
                     Craft Your<br>
-                    <span class="text-blue-600">Growth Strategy</span>
+                    <span class="stat-number">Growth Strategy</span>
                 </h3>
-                <p class="text-2xl md:text-3xl text-gray-600 max-w-4xl mx-auto font-light leading-relaxed">
+                <p class="text-2xl md:text-3xl text-adaptive-secondary max-w-4xl mx-auto font-light leading-relaxed">
                     Answer a few questions to generate a personalized plan and pricing estimate.<br>
-                    <span class="text-gray-400">It takes less than 2 minutes.</span>
+                    <span class="opacity-60">It takes less than 2 minutes.</span>
                 </p>
             </div>
 
@@ -485,13 +664,13 @@
                 <!-- Step 1: Primary Goal -->
                 <div id="step1" class="reveal">
                     <div class="text-center mb-16">
-                        <h4 class="text-4xl md:text-5xl font-semibold mb-6 text-gray-900">What is your primary goal?</h4>
-                        <p class="text-xl text-gray-600">Choose the path that best describes your current situation.</p>
+                        <h4 class="text-4xl md:text-5xl font-semibold mb-6 text-adaptive">What is your primary goal?</h4>
+                        <p class="text-xl text-adaptive-secondary">Choose the path that best describes your current situation.</p>
                     </div>
                     
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
                         <div class="goal-card group cursor-pointer" data-value="BUILD">
-                            <div class="relative overflow-hidden rounded-3xl aspect-[4/3] mb-6">
+                            <div class="relative overflow-hidden aspect-[4/3] mb-6">
                                 <img src="build.png" 
                                      alt="Build new social media presence" 
                                      class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
@@ -505,7 +684,7 @@
                         </div>
 
                         <div class="goal-card group cursor-pointer" data-value="FIX">
-                            <div class="relative overflow-hidden rounded-3xl aspect-[4/3] mb-6">
+                            <div class="relative overflow-hidden aspect-[4/3] mb-6">
                                 <img src="fix.png" 
                                      alt="Fix existing social media strategy" 
                                      class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
@@ -523,8 +702,8 @@
                 <!-- Step 2: Media Coverage -->
                 <div id="step2" class="hidden">
                     <div class="text-center max-w-3xl mx-auto">
-                        <h4 class="text-4xl md:text-5xl font-semibold mb-6 text-gray-900">Professional Event Coverage?</h4>
-                        <p class="text-xl text-gray-600 mb-12 leading-relaxed">
+                        <h4 class="text-4xl md:text-5xl font-semibold mb-6 text-adaptive">Professional Event Coverage?</h4>
+                        <p class="text-xl text-adaptive-secondary mb-12 leading-relaxed">
                             Our media network captures everything from intimate gatherings to large-scale conferences with cinematic quality.
                         </p>
                         <div class="flex flex-col sm:flex-row gap-6 max-w-lg mx-auto">
@@ -537,14 +716,14 @@
                 <!-- Step 3: Event Details -->
                 <div id="step3" class="hidden">
                     <div class="text-center mb-12">
-                        <h4 class="text-4xl md:text-5xl font-semibold mb-6 text-gray-900">Tell us about your event</h4>
-                        <p class="text-xl text-gray-600">Help us understand your requirements for accurate pricing.</p>
+                        <h4 class="text-4xl md:text-5xl font-semibold mb-6 text-adaptive">Tell us about your event</h4>
+                        <p class="text-xl text-adaptive-secondary">Help us understand your requirements for accurate pricing.</p>
                     </div>
                     
                     <div class="max-w-2xl mx-auto space-y-8">
                         <div class="space-y-3">
-                            <label class="block text-lg font-medium text-gray-800">Estimated Audience Size</label>
-                            <select id="audience-size" class="w-full p-4 text-lg border-2 border-gray-200 rounded-2xl focus:border-blue-500 focus:outline-none bg-gray-50">
+                            <label class="block text-lg font-medium text-adaptive">Estimated Audience Size</label>
+                            <select id="audience-size" class="form-input">
                                 <option value="A1">Under 100</option>
                                 <option value="A2">100 - 500</option>
                                 <option value="A3">500 - 2,000</option>
@@ -553,8 +732,8 @@
                         </div>
                         
                         <div class="space-y-3">
-                            <label class="block text-lg font-medium text-gray-800">Event Duration</label>
-                            <select id="event-duration" class="w-full p-4 text-lg border-2 border-gray-200 rounded-2xl focus:border-blue-500 focus:outline-none bg-gray-50">
+                            <label class="block text-lg font-medium text-adaptive">Event Duration</label>
+                            <select id="event-duration" class="form-input">
                                 <option value="D1">Half-day (up to 4 hours)</option>
                                 <option value="D2">Full-day (up to 8 hours)</option>
                                 <option value="D3">Multi-day (2-3 days)</option>
@@ -562,8 +741,8 @@
                         </div>
                         
                         <div class="space-y-3">
-                            <label class="block text-lg font-medium text-gray-800">Final Video Length</label>
-                            <select id="edit-duration" class="w-full p-4 text-lg border-2 border-gray-200 rounded-2xl focus:border-blue-500 focus:outline-none bg-gray-50">
+                            <label class="block text-lg font-medium text-adaptive">Final Video Length</label>
+                            <select id="edit-duration" class="form-input">
                                 <option value="E1">Highlight Reel (1-3 mins)</option>
                                 <option value="E2">Promotional Video (5-10 mins)</option>
                                 <option value="E3">Full Coverage (30+ mins)</option>
@@ -571,8 +750,8 @@
                         </div>
                         
                         <div class="space-y-3">
-                            <label class="block text-lg font-medium text-gray-800">Payment Plan</label>
-                            <select id="payment-plan" class="w-full p-4 text-lg border-2 border-gray-200 rounded-2xl focus:border-blue-500 focus:outline-none bg-gray-50">
+                            <label class="block text-lg font-medium text-adaptive">Payment Plan</label>
+                            <select id="payment-plan" class="form-input">
                                 <option value="P1">One-time Payment</option>
                                 <option value="P1Y">1 Year Plan (Save 15%)</option>
                                 <option value="P5Y">5 Year Plan (Save 25%)</option>
@@ -589,22 +768,22 @@
                 <!-- Step 4: Results -->
                 <div id="results" class="hidden text-center">
                     <div class="mb-12">
-                        <h4 class="text-4xl md:text-5xl font-semibold mb-6 text-gray-900">Your Plan is Ready</h4>
-                        <p class="text-xl text-gray-600">Use this reference ID during our strategy call for personalized recommendations.</p>
+                        <h4 class="text-4xl md:text-5xl font-semibold mb-6 text-adaptive">Your Plan is Ready</h4>
+                        <p class="text-xl text-adaptive-secondary">Use this reference ID during our strategy call for personalized recommendations.</p>
                     </div>
                     
-                    <div class="bg-gray-50 rounded-3xl p-12 mb-12 max-w-2xl mx-auto">
+                    <div class="section-surface rounded-3xl p-12 mb-12 max-w-2xl mx-auto border border-opacity-10">
                         <div class="mb-8">
-                            <div class="text-sm text-gray-500 mb-2 uppercase tracking-wider">Reference ID</div>
-                            <div id="ref-number" class="text-3xl font-mono font-bold text-blue-600 tracking-wider"></div>
+                            <div class="text-sm text-adaptive-secondary mb-2 uppercase tracking-wider">Reference ID</div>
+                            <div id="ref-number" class="text-3xl font-mono font-bold stat-number tracking-wider"></div>
                         </div>
                         <div>
-                            <div class="text-sm text-gray-500 mb-2 uppercase tracking-wider">Estimated Investment</div>
-                            <div id="price-estimate" class="text-5xl font-bold text-gray-900"></div>
+                            <div class="text-sm text-adaptive-secondary mb-2 uppercase tracking-wider">Estimated Investment</div>
+                            <div id="price-estimate" class="text-5xl font-bold text-adaptive"></div>
                         </div>
                     </div>
                     
-                    <p class="text-gray-500 mb-8">*Final pricing confirmed during our consultation</p>
+                    <p class="text-adaptive-secondary mb-8">*Final pricing confirmed during our consultation</p>
                     <button id="book-call-button" class="btn-primary py-4 px-12 text-xl">Schedule Strategy Call</button>
                 </div>
             </div>
@@ -644,8 +823,8 @@
     <div id="lead-modal" class="modal hidden">
         <div class="modal-content">
             <div class="flex justify-between items-center mb-6">
-                <h3 class="text-xl font-semibold">Complete Your Request</h3>
-                <button id="close-lead-modal" class="text-gray-400 hover:text-gray-600">
+                <h3 class="text-xl font-semibold text-adaptive">Complete Your Request</h3>
+                <button id="close-lead-modal" class="text-adaptive-secondary hover:text-adaptive">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
                     </svg>
@@ -654,11 +833,11 @@
             
             <form id="lead-form" class="space-y-4">
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Your Name</label>
+                    <label class="block text-sm font-medium text-adaptive mb-2">Your Name</label>
                     <input type="text" id="user-name" class="form-input" required>
                 </div>
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Email Address</label>
+                    <label class="block text-sm font-medium text-adaptive mb-2">Email Address</label>
                     <input type="email" id="user-email" class="form-input" required>
                 </div>
                 <button type="submit" class="w-full btn-primary py-3">Continue to Booking</button>
@@ -671,10 +850,10 @@
         <div class="modal-content max-w-4xl w-full h-full max-h-[80vh]">
             <div class="flex justify-between items-center mb-4">
                 <div>
-                    <h3 class="text-xl font-semibold">Schedule Your Strategy Call</h3>
-                    <p class="text-sm text-gray-600">Reference ID: <span id="final-ref" class="font-mono text-blue-600"></span></p>
+                    <h3 class="text-xl font-semibold text-adaptive">Schedule Your Strategy Call</h3>
+                    <p class="text-sm text-adaptive-secondary">Reference ID: <span id="final-ref" class="font-mono stat-number"></span></p>
                 </div>
-                <button id="close-calendly-modal" class="text-gray-400 hover:text-gray-600">
+                <button id="close-calendly-modal" class="text-adaptive-secondary hover:text-adaptive">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
                     </svg>
@@ -694,7 +873,7 @@
         // Set current year
         document.getElementById('year').textContent = new Date().getFullYear();
 
-        // Header color change on scroll
+        // Header color change on scroll with improved contrast management
         const header = document.querySelector('header');
         const heroSection = document.querySelector('section'); // First section is hero
 
@@ -703,15 +882,16 @@
             const scrollPosition = window.scrollY + 100; // Add offset for early transition
             
             if (scrollPosition > heroBottom) {
+                header.classList.remove('header-default');
                 header.classList.add('header-light');
             } else {
                 header.classList.remove('header-light');
+                header.classList.add('header-default');
             }
         }
 
-        // Update on scroll
+        // Update on scroll and load
         window.addEventListener('scroll', updateHeaderColor);
-        // Update on load
         updateHeaderColor();
 
         // Scroll progress indicator
@@ -720,258 +900,185 @@
             document.querySelector('.scroll-indicator').style.width = scrolled + '%';
         });
 
-        // 3D Scene with GLB models
-        let scene, camera, renderer, drone, c1Model, mixer;
+        // --- 3D Scene Management ---
         const clock = new THREE.Clock();
+        const managedScenes = [];
+        let GLTFLoader;
 
-        function init3D() {
-            scene = new THREE.Scene();
-            camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-            renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
-            renderer.setSize(window.innerWidth, window.innerHeight);
-            renderer.setClearColor(0x000000, 0);
-            renderer.outputEncoding = THREE.sRGBEncoding;
-            renderer.toneMapping = THREE.ACESFilmicToneMapping;
-            renderer.toneMappingExposure = 1;
-            document.getElementById('hero-3d').appendChild(renderer.domElement);
+        async function initThreeScenes() {
+            // Dynamically import GLTFLoader once
+            const loaderSources = [
+                () => import('https://cdn.jsdelivr.net/npm/three@0.128.0/examples/jsm/loaders/GLTFLoader.js'),
+                () => import('https://cdn.skypack.dev/three@0.128.0/examples/jsm/loaders/GLTFLoader.js'),
+                () => import('https://cdn.jsdelivr.net/npm/three@0.128.0/examples/jsm/loaders/GLTFLoader.js')
+            ];
+            for (const loadSource of loaderSources) {
+                try {
+                    const module = await loadSource();
+                    GLTFLoader = module.GLTFLoader;
+                    break;
+                } catch (error) {
+                    console.warn('GLTFLoader source failed:', error);
+                }
+            }
+            if (!GLTFLoader) {
+                console.error("Could not load GLTFLoader from any source.");
+            }
 
-            // Lighting setup
-            const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
-            scene.add(ambientLight);
+            // Create Drone Scene
+            createSceneAndLoadModel({
+                containerId: 'drone-container',
+                modelPaths: ['./drone.glb', 'drone.glb', '/drone.glb', 'assets/drone.glb'],
+                fallbackFn: createFallbackDrone,
+                scale: 4,
+                cameraPosition: { x: 0, y: 1, z: 6 },
+                autoRotateSpeed: 0.005
+            });
 
-            const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
-            directionalLight.position.set(5, 5, 5);
-            directionalLight.castShadow = true;
-            scene.add(directionalLight);
-
-            const pointLight = new THREE.PointLight(0x007AFF, 0.5, 100);
-            pointLight.position.set(-5, 0, 5);
-            scene.add(pointLight);
-
-            // Multiple GLTFLoader loading strategies
-            loadModels();
-
-            camera.position.z = 10;
-            camera.position.y = 3;
+            // Create Camera Scene
+            createSceneAndLoadModel({
+                containerId: 'camera-container',
+                modelPaths: ['./c1.glb', 'c1.glb', '/c1.glb', 'assets/c1.glb'],
+                fallbackFn: createFallbackC1,
+                scale: 2.5,
+                cameraPosition: { x: 0, y: 0.5, z: 4 },
+                autoRotateSpeed: 0.01
+            });
 
             animate3D();
         }
 
-        let modelsLoaded = 0;
-        let loadingAttempts = 0;
+        function createSceneAndLoadModel(config) {
+            const container = document.getElementById(config.containerId);
+            if (!container) return;
 
-        function loadModels() {
-            console.log('Starting model loading...');
-            
-            // Strategy 1: Try with script-loaded GLTFLoader
-            if (typeof THREE.GLTFLoader !== 'undefined') {
-                console.log('Using script-loaded GLTFLoader');
-                loadWithLoader(new THREE.GLTFLoader());
-                return;
-            }
+            const scene = new THREE.Scene();
+            const camera = new THREE.PerspectiveCamera(75, container.clientWidth / container.clientHeight, 0.1, 1000);
+            camera.position.set(config.cameraPosition.x, config.cameraPosition.y, config.cameraPosition.z);
 
-            // Strategy 2: Try dynamic import from CDN
-            const cdnUrls = [
-                'https://unpkg.com/three@0.128.0/examples/jsm/loaders/GLTFLoader.js',
-                'https://cdn.jsdelivr.net/npm/three@0.128.0/examples/jsm/loaders/GLTFLoader.js',
-                'https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/GLTFLoader.js'
-            ];
+            const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+            renderer.setSize(container.clientWidth, container.clientHeight);
+            renderer.setClearColor(0x000000, 0);
+            renderer.outputEncoding = THREE.sRGBEncoding;
+            renderer.toneMapping = THREE.ACESFilmicToneMapping;
+            renderer.toneMappingExposure = 1.2;
+            container.appendChild(renderer.domElement);
 
-            tryLoadFromCDN(cdnUrls, 0);
-        }
+            const ambientLight = new THREE.AmbientLight(0xffffff, 0.8);
+            scene.add(ambientLight);
+            const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
+            directionalLight.position.set(5, 10, 7.5);
+            scene.add(directionalLight);
 
-        function tryLoadFromCDN(urls, index) {
-            if (index >= urls.length) {
-                console.log('All CDN attempts failed, creating fallback models');
-                createFallbackModels();
-                return;
-            }
+            const sceneData = { container, scene, camera, renderer, model: null, mixer: null, ...config };
+            managedScenes.push(sceneData);
 
-            console.log(`Trying CDN ${index + 1}: ${urls[index]}`);
-            
-            import(urls[index]).then(({ GLTFLoader }) => {
-                console.log(`Successfully loaded GLTFLoader from CDN ${index + 1}`);
-                loadWithLoader(new GLTFLoader());
-            }).catch(error => {
-                console.log(`CDN ${index + 1} failed:`, error);
-                tryLoadFromCDN(urls, index + 1);
+            // Mouse interaction for rotation
+            let isMouseDown = false;
+            let previousMousePosition = { x: 0, y: 0 };
+            container.addEventListener('mousedown', e => { isMouseDown = true; });
+            container.addEventListener('mouseup', e => { isMouseDown = false; });
+            container.addEventListener('mouseleave', e => { isMouseDown = false; });
+            container.addEventListener('mousemove', e => {
+                if (!isMouseDown || !sceneData.model) return;
+                const deltaMove = { x: e.offsetX - previousMousePosition.x, y: e.offsetY - previousMousePosition.y };
+                sceneData.model.rotation.y += deltaMove.x * 0.01;
+                sceneData.model.rotation.x += deltaMove.y * 0.01;
+                previousMousePosition = { x: e.offsetX, y: e.offsetY };
             });
+
+            // Model Loading
+            if (GLTFLoader) {
+                const loader = new GLTFLoader();
+                tryLoadModel(loader, config.modelPaths, 0, sceneData);
+            } else {
+                console.warn(`GLTFLoader not available for ${config.containerId}, using fallback.`);
+                sceneData.model = config.fallbackFn();
+                sceneData.model.scale.setScalar(config.scale);
+                scene.add(sceneData.model);
+            }
         }
 
-        function loadWithLoader(loader) {
-            loadingAttempts++;
-            console.log(`Loading attempt ${loadingAttempts}`);
-            
-            // Try multiple file path variations
-            const filePaths = [
-                ['./drone.glb', './c1.glb'], // Same directory
-                ['drone.glb', 'c1.glb'], // Same directory without ./
-                ['/drone.glb', '/c1.glb'], // Root directory
-                ['assets/drone.glb', 'assets/c1.glb'], // Assets folder
-                ['models/drone.glb', 'models/c1.glb'], // Models folder
-            ];
-
-            tryLoadPaths(loader, filePaths, 0);
-        }
-
-        function tryLoadPaths(loader, paths, pathIndex) {
+        function tryLoadModel(loader, paths, pathIndex, sceneData) {
             if (pathIndex >= paths.length) {
-                console.log('All file paths failed, creating fallback models');
-                createFallbackModels();
+                console.warn(`All paths failed for ${sceneData.containerId}, using fallback.`);
+                sceneData.model = sceneData.fallbackFn();
+                sceneData.model.scale.setScalar(sceneData.scale);
+                sceneData.scene.add(sceneData.model);
                 return;
             }
 
-            const [dronePath, c1Path] = paths[pathIndex];
-            console.log(`Trying paths: ${dronePath}, ${c1Path}`);
-
-            // Load drone
-            loader.load(
-                dronePath,
+            loader.load(paths[pathIndex],
                 (gltf) => {
-                    console.log('Drone model loaded successfully from:', dronePath);
-                    drone = gltf.scene;
-                    drone.scale.setScalar(1.5);
-                    drone.position.set(-4, 1, 2);
-                    scene.add(drone);
-                    updateLoadingStatus();
-                },
-                (progress) => {
-                    console.log('Drone loading progress:', Math.round((progress.loaded / progress.total) * 100) + '%');
-                },
-                (error) => {
-                    console.log('Drone loading failed from path:', dronePath, error);
-                    createFallbackDrone();
-                    updateLoadingStatus();
-                }
-            );
-
-            // Load C1
-            loader.load(
-                c1Path,
-                (gltf) => {
-                    console.log('C1 model loaded successfully from:', c1Path);
-                    c1Model = gltf.scene;
-                    c1Model.scale.setScalar(0.8);
-                    c1Model.position.set(4, 0, 1);
-                    scene.add(c1Model);
-                    
-                    // Setup animation mixer if animations exist
-                    if (gltf.animations.length > 0) {
-                        mixer = new THREE.AnimationMixer(c1Model);
-                        gltf.animations.forEach((clip) => {
-                            mixer.clipAction(clip).play();
-                        });
+                    sceneData.model = gltf.scene;
+                    sceneData.model.scale.setScalar(sceneData.scale);
+                    sceneData.scene.add(sceneData.model);
+                    if (gltf.animations && gltf.animations.length) {
+                        sceneData.mixer = new THREE.AnimationMixer(sceneData.model);
+                        gltf.animations.forEach(clip => sceneData.mixer.clipAction(clip).play());
                     }
-                    updateLoadingStatus();
                 },
-                (progress) => {
-                    console.log('C1 loading progress:', Math.round((progress.loaded / progress.total) * 100) + '%');
-                },
+                undefined,
                 (error) => {
-                    console.log('C1 loading failed from path:', c1Path, error);
-                    createFallbackC1();
-                    updateLoadingStatus();
+                    console.warn(`Loading failed from ${paths[pathIndex]}:`, error);
+                    tryLoadModel(loader, paths, pathIndex + 1, sceneData);
                 }
             );
-
-            // If both fail, try next path set after a delay
-            setTimeout(() => {
-                if (modelsLoaded < 2 && loadingAttempts === 1) {
-                    tryLoadPaths(loader, paths, pathIndex + 1);
-                }
-            }, 3000);
-        }
-
-        function createFallbackModels() {
-            createFallbackDrone();
-            createFallbackC1();
-            updateLoadingStatus();
-            updateLoadingStatus(); // Call twice for both models
-        }
-
-        function updateLoadingStatus() {
-            modelsLoaded++;
-            console.log(`Models loaded: ${modelsLoaded}/2`);
-            if (modelsLoaded >= 2) {
-                const loadingElement = document.querySelector('.model-loading');
-                if (loadingElement) {
-                    loadingElement.style.display = 'none';
-                    console.log('All models loaded, hiding loading indicator');
-                }
-            }
         }
 
         function createFallbackDrone() {
-            console.log('Creating fallback drone model');
-            const geometry = new THREE.BoxGeometry(2, 0.2, 2);
-            const material = new THREE.MeshLambertMaterial({ 
-                color: 0x333333,
-                transparent: true,
-                opacity: 0.7
-            });
-            drone = new THREE.Mesh(geometry, material);
-            
-            // Add simple propellers
-            const propGeometry = new THREE.CylinderGeometry(0.3, 0.3, 0.05, 8);
-            const propMaterial = new THREE.MeshLambertMaterial({ color: 0x666666 });
-            
-            const positions = [[-0.8, 0.2, -0.8], [0.8, 0.2, -0.8], [-0.8, 0.2, 0.8], [0.8, 0.2, 0.8]];
-            positions.forEach(pos => {
-                const prop = new THREE.Mesh(propGeometry, propMaterial);
+            const group = new THREE.Group();
+            const bodyGeo = new THREE.BoxGeometry(2, 0.2, 2);
+            const bodyMat = new THREE.MeshStandardMaterial({ color: 0x333333, metalness: 0.8, roughness: 0.4 });
+            const body = new THREE.Mesh(bodyGeo, bodyMat);
+            const propGeo = new THREE.CylinderGeometry(0.3, 0.3, 0.05, 8);
+            const propMat = new THREE.MeshStandardMaterial({ color: 0x555555, metalness: 0.9, roughness: 0.2 });
+            [[-0.8, 0.2, -0.8], [0.8, 0.2, -0.8], [-0.8, 0.2, 0.8], [0.8, 0.2, 0.8]].forEach(pos => {
+                const prop = new THREE.Mesh(propGeo, propMat);
                 prop.position.set(...pos);
-                drone.add(prop);
+                body.add(prop);
             });
-            
-            drone.position.set(-4, 1, 2);
-            scene.add(drone);
+            group.add(body);
+            return group;
         }
 
         function createFallbackC1() {
-            console.log('Creating fallback camera model');
-            // Create camera-like shape since c1.glb appears to be a camera
-            const bodyGeometry = new THREE.BoxGeometry(1.2, 0.8, 0.6);
-            const bodyMaterial = new THREE.MeshLambertMaterial({ 
-                color: 0x222222,
-                transparent: true,
-                opacity: 0.8
-            });
-            const body = new THREE.Mesh(bodyGeometry, bodyMaterial);
-            
-            // Lens
-            const lensGeometry = new THREE.CylinderGeometry(0.4, 0.4, 0.3, 16);
-            const lensMaterial = new THREE.MeshLambertMaterial({ color: 0x111111 });
-            const lens = new THREE.Mesh(lensGeometry, lensMaterial);
-            lens.rotation.z = Math.PI / 2;
-            lens.position.set(0, 0, 0.45);
-            
-            c1Model = new THREE.Group();
-            c1Model.add(body);
-            c1Model.add(lens);
-            c1Model.position.set(4, 0, 1);
-            scene.add(c1Model);
+            const group = new THREE.Group();
+            const bodyGeo = new THREE.BoxGeometry(1.2, 0.8, 0.6);
+            const bodyMat = new THREE.MeshStandardMaterial({ color: 0x222222, metalness: 0.9, roughness: 0.3 });
+            const body = new THREE.Mesh(bodyGeo, bodyMat);
+            const lensGeo = new THREE.CylinderGeometry(0.4, 0.35, 0.4, 32);
+            const lensMat = new THREE.MeshStandardMaterial({ color: 0x111111, metalness: 0.5, roughness: 0.1 });
+            const lens = new THREE.Mesh(lensGeo, lensMat);
+            lens.rotation.x = Math.PI / 2;
+            lens.position.set(0, 0, 0.4);
+            body.add(lens);
+            group.add(body);
+            return group;
         }
 
         function animate3D() {
             requestAnimationFrame(animate3D);
-
             const delta = clock.getDelta();
 
-            if (mixer) {
-                mixer.update(delta);
-            }
-
-            if (drone) {
-                drone.rotation.y += 0.005;
-                drone.position.y = Math.sin(Date.now() * 0.001) * 0.3;
-            }
-
-            if (c1Model) {
-                c1Model.rotation.y += 0.01;
-                c1Model.position.y = Math.cos(Date.now() * 0.0012) * 0.2;
-            }
-
-            renderer.render(scene, camera);
+            managedScenes.forEach(data => {
+                if (data.mixer) data.mixer.update(delta);
+                if (data.model) {
+                    data.model.rotation.y += data.autoRotateSpeed;
+                }
+                data.renderer.render(data.scene, data.camera);
+            });
         }
+        
+        // Handle window resize for all scenes
+        window.addEventListener('resize', () => {
+            managedScenes.forEach(data => {
+                const { container, camera, renderer } = data;
+                camera.aspect = container.clientWidth / container.clientHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(container.clientWidth, container.clientHeight);
+            });
+        });
 
         // Intersection Observer for reveal animations
         const observerOptions = {
@@ -1020,11 +1127,11 @@
             });
         }, observerOptions);
 
-        document.querySelectorAll('.stat-number').forEach(counter => {
+        document.querySelectorAll('.stat-number[data-target]').forEach(counter => {
             counterObserver.observe(counter);
         });
 
-        // Mobile menu
+        // Mobile menu toggle
         document.getElementById('mobile-menu-button').addEventListener('click', () => {
             document.getElementById('mobile-menu').classList.toggle('hidden');
         });
@@ -1045,7 +1152,6 @@
             });
         }
 
-        // Goal selection
         document.querySelectorAll('.goal-card').forEach(card => {
             card.addEventListener('click', () => {
                 selections.core = card.dataset.value;
@@ -1053,7 +1159,6 @@
             });
         });
 
-        // Media coverage decision
         document.getElementById('add-media-yes').addEventListener('click', () => {
             selections.media = 'YES';
             showStep(2);
@@ -1064,7 +1169,6 @@
             generateResults();
         });
 
-        // Generate plan
         document.getElementById('generate-plan-button').addEventListener('click', () => {
             selections.audience = document.getElementById('audience-size').value;
             selections.eventDuration = document.getElementById('event-duration').value;
@@ -1074,33 +1178,24 @@
         });
 
         function generateResults() {
-            // Generate reference number
             let ref = `NFZ-${selections.core}`;
             let basePrice = selections.core === 'BUILD' ? 3000 : 1500;
 
             if (selections.media === 'YES') {
                 ref += `-M-${selections.audience}-${selections.eventDuration}-${selections.editDuration}-${selections.paymentPlan}`;
-                
-                // Add pricing based on selections
                 const audiencePricing = { A1: 0, A2: 500, A3: 1500, A4: 3000 };
                 const durationPricing = { D1: 0, D2: 800, D3: 2000 };
                 const editPricing = { E1: 0, E2: 400, E3: 1200 };
-                
                 basePrice += audiencePricing[selections.audience] || 0;
                 basePrice += durationPricing[selections.eventDuration] || 0;
                 basePrice += editPricing[selections.editDuration] || 0;
-                
                 if (selections.paymentPlan.includes('Y')) {
-                    basePrice *= 11; // Annual multiplier with discount
+                    basePrice *= 11;
                 }
             }
-
             ref += `-${Math.floor(1000 + Math.random() * 9000)}`;
             selections.ref = ref;
-
-            // Display results
             document.getElementById('ref-number').textContent = ref;
-            
             let priceDisplay = `$${basePrice.toLocaleString()}`;
             if (selections.paymentPlan?.includes('Y')) {
                 priceDisplay += '/year';
@@ -1109,7 +1204,6 @@
             } else {
                 priceDisplay += '/month';
             }
-            
             document.getElementById('price-estimate').textContent = priceDisplay;
             showStep(3);
         }
@@ -1121,38 +1215,24 @@
         document.getElementById('book-call-button').addEventListener('click', () => {
             leadModal.classList.remove('hidden');
         });
-
         document.getElementById('close-lead-modal').addEventListener('click', () => {
             leadModal.classList.add('hidden');
         });
-
         document.getElementById('close-calendly-modal').addEventListener('click', () => {
             calendlyModal.classList.add('hidden');
         });
-
         document.getElementById('lead-form').addEventListener('submit', (e) => {
             e.preventDefault();
             selections.name = document.getElementById('user-name').value;
             selections.email = document.getElementById('user-email').value;
-            
             document.getElementById('final-ref').textContent = selections.ref;
             leadModal.classList.add('hidden');
             calendlyModal.classList.remove('hidden');
-            
-            console.log('Lead captured:', selections);
         });
+        
+        // Initialize 3D scenes
+        initThreeScenes();
 
-        // Initialize 3D scene
-        init3D();
-
-        // Handle resize
-        window.addEventListener('resize', () => {
-            if (camera && renderer) {
-                camera.aspect = window.innerWidth / window.innerHeight;
-                camera.updateProjectionMatrix();
-                renderer.setSize(window.innerWidth, window.innerHeight);
-            }
-        });
     </script>
 </body>
 </html>
