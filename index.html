@@ -16,12 +16,15 @@
             position: absolute;
             top: 50%;
             left: 50%;
-            width: 100%;
-            height: 100%;
+            width: 100vw;
+            height: 56.25vw; /* 16:9 aspect ratio */
+            min-height: 100vh;
+            min-width: 177.77vh; /* 16:9 aspect ratio for portrait */
             object-fit: cover;
             transform: translate(-50%, -50%);
             z-index: -2;
             filter: brightness(0.3);
+            pointer-events: none;
         }
         .hero-overlay {
             position: absolute;
@@ -59,6 +62,41 @@
             -ms-overflow-style: none;  /* IE and Edge */
             scrollbar-width: none;  /* Firefox */
         }
+        /* Animation for revealing elements on scroll */
+        .reveal {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+        }
+        .reveal.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        /* New styles for goal selection cards */
+        .goal-card {
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.4s ease, box-shadow 0.4s ease;
+        }
+        .goal-card:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 30px rgba(59, 130, 246, 0.6);
+        }
+        .goal-card img {
+            transition: transform 0.4s ease;
+        }
+        .goal-card:hover img {
+            transform: scale(1.1);
+        }
+        .goal-card-overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to top, rgba(0,0,0,0.9) 20%, rgba(0,0,0,0.1) 100%);
+            transition: background 0.3s ease;
+        }
+        .goal-card:hover .goal-card-overlay {
+             background: linear-gradient(to top, rgba(0,0,0,0.95) 30%, rgba(59, 130, 246, 0.2) 100%);
+        }
     </style>
 </head>
 <body class="antialiased">
@@ -90,13 +128,15 @@
 
     <!-- Hero Section -->
     <section class="relative h-screen flex items-center justify-center text-center overflow-hidden">
-        <video autoplay muted loop playsinline class="hero-video-bg" poster="https://placehold.co/1920x1080/0a0a0a/e5e5e5?text=Loading+Video...">
-            <!-- Ideally, host your own video. Using a placeholder. -->
-            <source src="https://assets.mixkit.co/videos/preview/mixkit-abstract-globe-with-flowing-lines-1748-large.mp4" type="video/mp4">
-        </video>
+        <iframe 
+            class="hero-video-bg"
+            src="https://www.youtube.com/embed/vYR-HUn-7NY?autoplay=1&mute=1&loop=1&playlist=vYR-HUn-7NY&controls=0&showinfo=0&modestbranding=1" 
+            frameborder="0" 
+            allow="autoplay; encrypted-media">
+        </iframe>
         <div class="hero-overlay"></div>
         <div class="relative z-10 px-4">
-            <h2 class="text-4xl md:text-7xl font-black text-white leading-tight mb-4">Elevate Your Digital Presence.</h2>
+            <h2 class="text-4xl sm:text-5xl md:text-7xl font-black text-white leading-tight mb-4">Elevate Your Digital Presence.</h2>
             <p class="text-lg md:text-xl text-gray-300 max-w-3xl mx-auto mb-8">We connect visionary brands and personalities with an elite network of certified social media professionals to create unparalleled growth and engagement.</p>
             <a href="#pricing" class="bg-blue-600 text-white font-bold py-4 px-10 rounded-lg text-lg cta-button">Generate Your Growth Plan</a>
         </div>
@@ -105,24 +145,38 @@
     <!-- Services Section -->
     <section id="services" class="py-20 bg-black">
         <div class="container mx-auto px-6 text-center">
-            <h3 class="text-4xl font-bold mb-4 text-white">Our Core Disciplines</h3>
-            <p class="text-gray-400 max-w-2xl mx-auto mb-12">Comprehensive solutions designed for maximum impact.</p>
+            <div class="reveal">
+                <h3 class="text-4xl font-bold mb-4 text-white">Our Core Disciplines</h3>
+                <p class="text-gray-400 max-w-2xl mx-auto mb-12">Comprehensive solutions designed for maximum impact.</p>
+            </div>
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                 <!-- Card 1 -->
-                <div class="glassmorphism p-8 rounded-2xl border border-transparent transition duration-300 feature-card">
-                    <img src="https://placehold.co/100x100/3B82F6/FFFFFF?text=SM" class="mx-auto mb-6 rounded-full" alt="Social Media Management">
+                <div class="glassmorphism p-8 rounded-2xl border border-transparent transition duration-300 feature-card reveal">
+                    <div class="mb-6 inline-block p-4 bg-gray-800 rounded-full">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                          <path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                        </svg>
+                    </div>
                     <h4 class="text-2xl font-bold mb-3 text-white">Social Media Management</h4>
                     <p class="text-gray-400">End-to-end management of your social channels. We handle content creation, scheduling, community engagement, and analytics to build a thriving online presence.</p>
                 </div>
                 <!-- Card 2 -->
-                <div class="glassmorphism p-8 rounded-2xl border border-transparent transition duration-300 feature-card">
-                    <img src="https://placehold.co/100x100/3B82F6/FFFFFF?text=AD" class="mx-auto mb-6 rounded-full" alt="Performance Marketing">
+                <div class="glassmorphism p-8 rounded-2xl border border-transparent transition duration-300 feature-card reveal" style="transition-delay: 200ms;">
+                    <div class="mb-6 inline-block p-4 bg-gray-800 rounded-full">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                          <path stroke-linecap="round" stroke-linejoin="round" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+                        </svg>
+                    </div>
                     <h4 class="text-2xl font-bold mb-3 text-white">Performance Marketing</h4>
                     <p class="text-gray-400">Data-driven ad campaigns that deliver measurable ROI. Our analysts are experts in optimizing for conversions, leads, and brand awareness across all major platforms.</p>
                 </div>
                 <!-- Card 3 -->
-                <div class="glassmorphism p-8 rounded-2xl border border-transparent transition duration-300 feature-card">
-                    <img src="https://placehold.co/100x100/3B82F6/FFFFFF?text=MC" class="mx-auto mb-6 rounded-full" alt="Event Media Coverage">
+                <div class="glassmorphism p-8 rounded-2xl border border-transparent transition duration-300 feature-card reveal" style="transition-delay: 400ms;">
+                     <div class="mb-6 inline-block p-4 bg-gray-800 rounded-full">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                          <path stroke-linecap="round" stroke-linejoin="round" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                        </svg>
+                    </div>
                     <h4 class="text-2xl font-bold mb-3 text-white">Event Media Coverage</h4>
                     <p class="text-gray-400">Capture your live events with our professional media network. From technical setup to cinematic videography and editing, we create assets that extend your event's reach.</p>
                 </div>
@@ -131,35 +185,52 @@
     </section>
 
     <!-- Our Network Section -->
-    <section id="network" class="py-20">
+    <section id="network" class="py-20 overflow-hidden">
         <div class="container mx-auto px-6 flex flex-col md:flex-row items-center gap-12">
-            <div class="md:w-1/2">
-                <img src="https://placehold.co/600x400/111111/e5e5e5?text=Our+Global+Network" class="rounded-2xl shadow-2xl" alt="Nafamzy Network Professionals">
+            <div class="md:w-1/2 reveal">
+                <img src="network.png" class="rounded-2xl shadow-2xl" alt="Nafamzy Network Professionals" onerror="this.onerror=null;this.src='https://placehold.co/600x400/111111/e5e5e5.png?text=Our+Global+Network';">
             </div>
-            <div class="md:w-1/2">
+            <div class="md:w-1/2 reveal" style="transition-delay: 200ms;">
                 <h3 class="text-4xl font-bold mb-4 text-white">The Power of the Network</h3>
                 <p class="text-gray-400 mb-6">Nafamzy isn't an agency; it's an exclusive ecosystem. Our members are rigorously vetted, fully certified, and continuously trained social media managers, analysts, and creative gurus. When you partner with us, you don't get a single employee—you get a dedicated team of specialists, perfectly matched to your brand's unique needs and goals.</p>
                 <a href="join.html" class="text-blue-400 font-semibold hover:text-blue-300 transition">Are you a professional? Join our network &rarr;</a>
             </div>
         </div>
     </section>
-    
-    <!-- Pricing / Get Started Section -->
-    <section id="pricing" class="py-20 bg-black">
-        <div class="container mx-auto px-6 text-center">
-            <h3 class="text-4xl font-bold text-white mb-4">Craft Your Custom Growth Strategy</h3>
-            <p class="text-gray-400 max-w-2xl mx-auto mb-12">Answer a few questions to generate a personalized plan and pricing reference. This will help us prepare for our strategy call.</p>
 
-            <div id="pricing-calculator" class="max-w-4xl mx-auto text-left glassmorphism rounded-2xl p-8 md:p-12">
+    <!-- Pricing / Get Started Section -->
+    <section id="pricing" class="py-20">
+        <div class="container mx-auto px-6 text-center">
+            <div class="reveal">
+                <h3 class="text-4xl font-bold text-white mb-4">Craft Your Custom Growth Strategy</h3>
+                <p class="text-gray-400 max-w-2xl mx-auto mb-12">Answer a few questions to generate a personalized plan and pricing reference. This will help us prepare for our strategy call.</p>
+            </div>
+
+            <div id="pricing-calculator" class="max-w-4xl mx-auto text-left glassmorphism rounded-2xl p-8 md:p-12 reveal">
                 <!-- Step 1: Core Service -->
                 <div id="step1">
-                    <h4 class="text-2xl font-semibold mb-2 text-white">What is your primary goal?</h4>
-                    <p class="text-gray-400 mb-6">Select the core service you are most interested in.</p>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <button data-value="SMM" class="pricing-option text-left p-4 border-2 border-gray-700 rounded-lg hover:border-blue-500 transition"><strong>Full Social Management:</strong> For building a dominant online brand.</button>
-                        <button data-value="ADS" class="pricing-option text-left p-4 border-2 border-gray-700 rounded-lg hover:border-blue-500 transition"><strong>Aggressive Ad Campaigns:</strong> For rapid growth and lead generation.</button>
-                        <button data-value="HYB" class="pricing-option text-left p-4 border-2 border-gray-700 rounded-lg hover:border-blue-500 transition"><strong>Hybrid Strategy:</strong> A balanced approach of both management and ads.</button>
-                        <button data-value="CON" class="pricing-option text-left p-4 border-2 border-gray-700 rounded-lg hover:border-blue-500 transition"><strong>Consulting Only:</strong> For expert guidance on your existing strategy.</button>
+                    <h4 class="text-2xl font-semibold mb-6 text-white text-center">What is your primary goal?</h4>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        
+                        <!-- Card: Build It -->
+                        <div class="pricing-option goal-card rounded-2xl cursor-pointer" data-value="BUILD">
+                            <img src="build.png" alt="Build a new social media presence from scratch" class="absolute h-full w-full object-cover" onerror="this.onerror=null;this.src='https://placehold.co/1024x1024/1a1a1a/ffffff.png?text=Build+It';">
+                            <div class="goal-card-overlay"></div>
+                            <div class="relative p-6 flex flex-col justify-end h-80">
+                                <h3 class="text-xl font-bold text-white">Build It</h3>
+                                <p class="text-sm text-gray-300">Create a powerful presence from the ground up.</p>
+                            </div>
+                        </div>
+
+                        <!-- Card: Fix It -->
+                        <div class="pricing-option goal-card rounded-2xl cursor-pointer" data-value="FIX">
+                            <img src="fix.png" alt="Fix or improve an existing social media strategy" class="absolute h-full w-full object-cover" onerror="this.onerror=null;this.src='https://placehold.co/1024x1024/1a1a1a/ffffff.png?text=Fix+It';">
+                            <div class="goal-card-overlay"></div>
+                            <div class="relative p-6 flex flex-col justify-end h-80">
+                                <h3 class="text-xl font-bold text-white">Fix It</h3>
+                                <p class="text-sm text-gray-300">Overhaul and optimize your current strategy.</p>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
@@ -256,7 +327,7 @@
     <!-- Lead Capture Modal -->
     <div id="lead-capture-modal" class="hidden fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50 p-4">
         <div class="glassmorphism rounded-2xl p-8 max-w-md w-full text-center relative">
-            <button id="close-lead-modal" class="absolute top-4 right-4 text-gray-400 hover:text-white">&times;</button>
+            <button id="close-lead-modal" class="absolute top-2 right-2 text-gray-400 hover:text-white text-4xl leading-none">&times;</button>
             <h3 class="text-2xl font-bold text-white mb-4">One Last Step...</h3>
             <p class="text-gray-400 mb-6">Enter your details below to lock in your reference ID and proceed to scheduling.</p>
             <form id="lead-form">
@@ -270,7 +341,7 @@
     <!-- Calendly Modal -->
     <div id="calendly-modal" class="hidden fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50 p-4">
         <div class="bg-gray-900 rounded-2xl p-2 max-w-4xl w-full h-full max-h-[700px] text-center relative no-scrollbar overflow-y-auto">
-             <button id="close-calendly-modal" class="absolute top-4 right-4 text-gray-400 hover:text-white text-3xl z-10">&times;</button>
+             <button id="close-calendly-modal" class="absolute top-2 right-4 text-gray-400 hover:text-white text-4xl z-10 leading-none">&times;</button>
             <h3 class="text-2xl font-bold text-white mb-4 pt-4">Schedule Your Strategy Call</h3>
             <p class="text-gray-400 mb-2">We've received your info! A confirmation will be sent to your email.</p>
             <p class="text-gray-400 mb-4">Your Reference ID: <strong id="final-ref" class="text-blue-400"></strong></p>
@@ -331,10 +402,9 @@
         function generateAndShowResults() {
             // Generate Reference Number
             let ref = `NFZ-${selections.core}`;
-            let basePrice = 1500;
-            if (selections.core === 'ADS') basePrice = 2000;
-            if (selections.core === 'HYB') basePrice = 3000;
-            if (selections.core === 'CON') basePrice = 800;
+            let basePrice = 1500; // Default for 'FIX'
+            if (selections.core === 'BUILD') basePrice = 3000;
+
 
             if (selections.media === 'YES') {
                 ref += `-M-${selections.audience}-${selections.eventDuration}-${selections.editDuration}-${selections.paymentPlan}`;
@@ -396,6 +466,26 @@
 
             // In a real app, you would send this data to a CRM or backend.
         });
+
+        // Scroll Animation Logic
+        const revealElements = document.querySelectorAll('.reveal');
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                    // Optional: Unobserve after revealing to save resources.
+                    // If you want animations to re-trigger on scroll up, leave this commented.
+                    // observer.unobserve(entry.target);
+                }
+            });
+        }, {
+            threshold: 0.1 // Trigger when 10% of the element is visible
+        });
+
+        revealElements.forEach(element => {
+            observer.observe(element);
+        });
     </script>
 </body>
 </html>
+
