@@ -5,487 +5,1154 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Nafamzy.com - Elite Social Media Management & Brand Growth</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
+        :root {
+            --accent-blue: #007AFF;
+            --text-primary: #1d1d1f;
+            --text-secondary: #86868b;
+            --background: #ffffff;
+            --surface: #f5f5f7;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
         body {
-            font-family: 'Inter', sans-serif;
-            background-color: #0a0a0a;
-            color: #e5e5e5;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: #ffffff;
+            color: #1d1d1f;
+            overflow-x: hidden;
+            line-height: 1.6;
         }
-        .hero-video-bg {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 100vw;
-            height: 56.25vw; /* 16:9 aspect ratio */
-            min-height: 100vh;
-            min-width: 177.77vh; /* 16:9 aspect ratio for portrait */
-            object-fit: cover;
-            transform: translate(-50%, -50%);
-            z-index: -2;
-            filter: brightness(0.3);
-            pointer-events: none;
-        }
-        .hero-overlay {
+
+        /* 3D Scene Container */
+        #hero-3d {
             position: absolute;
             top: 0;
             left: 0;
-            right: 0;
-            bottom: 0;
-            background: radial-gradient(circle, rgba(10, 10, 10, 0.3) 0%, rgba(10, 10, 10, 0.9) 80%);
-            z-index: -1;
+            width: 100%;
+            height: 100%;
+            z-index: 2;
+            pointer-events: none;
         }
-        .glassmorphism {
-            background: rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+
+        #hero-3d canvas {
+            position: absolute !important;
+            top: 0;
+            left: 0;
         }
-        .cta-button {
-            transition: all 0.3s ease;
-            box-shadow: 0 0 15px rgba(59, 130, 246, 0.4);
+
+        /* Apple-style glassmorphism */
+        .glass {
+            background: rgba(0, 0, 0, 0.1);
+            backdrop-filter: saturate(180%) blur(20px);
+            -webkit-backdrop-filter: saturate(180%) blur(20px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
         }
-        .cta-button:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 0 25px rgba(59, 130, 246, 0.7);
+
+        /* Smooth scroll progress */
+        .scroll-indicator {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 0%;
+            height: 2px;
+            background: var(--accent-blue);
+            z-index: 1000;
+            transition: width 0.1s ease;
         }
+
+        /* Apple-style buttons */
+        .btn-primary {
+            background: var(--accent-blue);
+            color: white;
+            border: none;
+            border-radius: 980px;
+            padding: 12px 24px;
+            font-weight: 500;
+            text-decoration: none;
+            display: inline-block;
+            transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            cursor: pointer;
+        }
+
+        .btn-primary:hover {
+            transform: scale(1.02);
+            filter: brightness(1.1);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: var(--accent-blue);
+            border: 1px solid var(--accent-blue);
+            border-radius: 980px;
+            padding: 12px 24px;
+            font-weight: 500;
+            text-decoration: none;
+            display: inline-block;
+            transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            cursor: pointer;
+        }
+
+        .btn-secondary:hover {
+            background: var(--accent-blue);
+            color: white;
+            transform: scale(1.02);
+        }
+
+        /* Typography */
+        .hero-title {
+            font-size: clamp(2.5rem, 8vw, 6rem);
+            font-weight: 700;
+            line-height: 1.1;
+            letter-spacing: -0.02em;
+            color: white;
+        }
+
+        .section-title {
+            font-size: clamp(2rem, 5vw, 3.5rem);
+            font-weight: 700;
+            line-height: 1.2;
+            letter-spacing: -0.01em;
+            color: #1f2937; /* Force dark color */
+        }
+
+        /* Override any inherited text colors */
+        .bg-gray-50 .section-title,
+        .bg-white .section-title,
+        section:not(.hero) h3,
+        section:not(.hero) h4 {
+            color: #1f2937 !important;
+        }
+
+        /* Ensure hero section text stays white */
+        .hero-section h2,
+        .hero-section p,
+        section:first-of-type h2,
+        section:first-of-type p {
+            color: white !important;
+        }
+
+        /* Card animations */
+        .feature-card {
+            background: #ffffff;
+            border-radius: 18px;
+            padding: 2rem;
+            transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            border: 1px solid #e5e5e7;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        }
+
         .feature-card:hover {
-            transform: scale(1.03);
-            border-color: rgba(59, 130, 246, 0.7);
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            border-color: rgba(0, 122, 255, 0.2);
         }
-        /* Hide scrollbar for Chrome, Safari and Opera */
-        .no-scrollbar::-webkit-scrollbar {
-            display: none;
+
+        /* Goal selection cards */
+        .goal-card {
+            transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            cursor: pointer;
         }
-        /* Hide scrollbar for IE, Edge and Firefox */
-        .no-scrollbar {
-            -ms-overflow-style: none;  /* IE and Edge */
-            scrollbar-width: none;  /* Firefox */
+
+        .goal-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
         }
-        /* Animation for revealing elements on scroll */
+
+        @media (prefers-color-scheme: dark) {
+            .goal-card:hover {
+                box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
+            }
+        }
+
+        /* Parallax sections */
+        .parallax-section {
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Reveal animations */
         .reveal {
             opacity: 0;
             transform: translateY(30px);
-            transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+            transition: all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
         }
+
         .reveal.visible {
             opacity: 1;
             transform: translateY(0);
         }
-        /* New styles for goal selection cards */
-        .goal-card {
-            position: relative;
-            overflow: hidden;
-            transition: transform 0.4s ease, box-shadow 0.4s ease;
-        }
-        .goal-card:hover {
-            transform: scale(1.05);
-            box-shadow: 0 0 30px rgba(59, 130, 246, 0.6);
-        }
-        .goal-card img {
-            transition: transform 0.4s ease;
-        }
-        .goal-card:hover img {
-            transform: scale(1.1);
-        }
-        .goal-card-overlay {
-            position: absolute;
+
+        /* Apple-style modal */
+        .modal {
+            position: fixed;
             inset: 0;
-            background: linear-gradient(to top, rgba(0,0,0,0.9) 20%, rgba(0,0,0,0.1) 100%);
-            transition: background 0.3s ease;
+            background: rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
         }
-        .goal-card:hover .goal-card-overlay {
-             background: linear-gradient(to top, rgba(0,0,0,0.95) 30%, rgba(59, 130, 246, 0.2) 100%);
+
+        .modal-content {
+            background: var(--background);
+            border-radius: 18px;
+            padding: 2rem;
+            max-width: 500px;
+            width: 100%;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.25);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        /* Form styling */
+        .form-input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid #d2d2d7;
+            border-radius: 12px;
+            background: var(--surface);
+            color: var(--text-primary);
+            font-size: 16px;
+            transition: border-color 0.2s ease;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--accent-blue);
+        }
+
+        @media (prefers-color-scheme: dark) {
+            .form-input {
+                border-color: #424245;
+            }
+        }
+
+        /* Header color transitions */
+        .header-light {
+            transition: all 0.3s ease;
+        }
+        
+        .header-light h1,
+        .header-light nav a,
+        .header-light button {
+            color: #1d1d1f !important;
+        }
+        
+        .header-light .mobile-menu a {
+            color: #1d1d1f !important;
+        }
+        
+        .header-light {
+            background: rgba(255, 255, 255, 0.9);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .hero-title {
+                font-size: 3rem;
+            }
+            
+            .feature-card:hover {
+                transform: none;
+            }
+        }
+
+        /* Loading state for 3D models */
+        .model-loading {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 14px;
+            background: rgba(0, 0, 0, 0.5);
+            padding: 8px 16px;
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+        }
+
+        /* Smooth page transitions */
+        .page-transition {
+            opacity: 0;
+            animation: fadeIn 0.8s ease-out forwards;
+        }
+
+        @keyframes fadeIn {
+            to { opacity: 1; }
+        }
+
+        /* Navigation */
+        nav a {
+            color: var(--text-primary);
+            text-decoration: none;
+            font-weight: 400;
+            transition: color 0.2s ease;
+        }
+
+        nav a:hover {
+            color: var(--accent-blue);
+        }
+
+        /* Stats counter animation */
+        .stat-number {
+            font-variant-numeric: tabular-nums;
         }
     </style>
 </head>
-<body class="antialiased">
+<body class="page-transition">
+    <!-- Scroll Progress -->
+    <div class="scroll-indicator"></div>
 
     <!-- Header -->
-    <header class="fixed top-0 left-0 right-0 z-50 glassmorphism">
-        <div class="container mx-auto px-6 py-4 flex justify-between items-center">
-            <h1 class="text-3xl font-black text-white tracking-wider">NAFAMZY</h1>
-            <nav class="hidden md:flex space-x-8 items-center">
-                <a href="#services" class="text-gray-300 hover:text-white transition">Services</a>
-                <a href="#network" class="text-gray-300 hover:text-white transition">Our Network</a>
-                <a href="#pricing" class="text-gray-300 hover:text-white transition">Get Started</a>
-                <a href="#contact" class="text-gray-300 hover:text-white transition">Contact</a>
+    <header class="fixed top-0 left-0 right-0 z-50 glass">
+        <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+            <h1 class="text-xl font-semibold text-white">Nafamzy</h1>
+            <nav class="hidden md:flex space-x-8">
+                <a href="#services" class="text-white/80 hover:text-white transition">Services</a>
+                <a href="#network" class="text-white/80 hover:text-white transition">Network</a>
+                <a href="#pricing" class="text-white/80 hover:text-white transition">Get Started</a>
+                <a href="#contact" class="text-white/80 hover:text-white transition">Contact</a>
             </nav>
-            <a href="#pricing" class="hidden md:block bg-blue-600 text-white font-bold py-2 px-5 rounded-lg cta-button">Book a Strategy Call</a>
+            <a href="#pricing" class="hidden md:block btn-primary">Book Strategy Call</a>
             <button id="mobile-menu-button" class="md:hidden text-white">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path>
+                </svg>
             </button>
         </div>
         <!-- Mobile Menu -->
-        <div id="mobile-menu" class="hidden md:hidden px-6 pb-4">
-             <a href="#services" class="block py-2 text-gray-300 hover:text-white transition">Services</a>
-             <a href="#network" class="block py-2 text-gray-300 hover:text-white transition">Our Network</a>
-             <a href="#pricing" class="block py-2 text-gray-300 hover:text-white transition">Get Started</a>
-             <a href="#contact" class="block py-2 text-gray-300 hover:text-white transition">Contact</a>
-             <a href="#pricing" class="mt-2 block bg-blue-600 text-white text-center font-bold py-2 px-5 rounded-lg cta-button">Book a Strategy Call</a>
+        <div id="mobile-menu" class="hidden md:hidden px-6 pb-4 border-t border-white/20">
+            <a href="#services" class="block py-3 text-white/80 hover:text-white transition">Services</a>
+            <a href="#network" class="block py-3 text-white/80 hover:text-white transition">Network</a>
+            <a href="#pricing" class="block py-3 text-white/80 hover:text-white transition">Get Started</a>
+            <a href="#contact" class="block py-3 text-white/80 hover:text-white transition">Contact</a>
+            <a href="#pricing" class="mt-3 btn-primary text-center block">Book Strategy Call</a>
         </div>
     </header>
 
     <!-- Hero Section -->
-    <section class="relative h-screen flex items-center justify-center text-center overflow-hidden">
+    <section class="relative h-screen flex items-center justify-center overflow-hidden">
         <iframe 
-            class="hero-video-bg"
+            class="absolute top-1/2 left-1/2 w-[100vw] h-[56.25vw] min-h-[100vh] min-w-[177.77vh] object-cover transform -translate-x-1/2 -translate-y-1/2 z-0 pointer-events-none"
+            style="filter: brightness(0.4);"
             src="https://www.youtube.com/embed/vYR-HUn-7NY?autoplay=1&mute=1&loop=1&playlist=vYR-HUn-7NY&controls=0&showinfo=0&modestbranding=1" 
             frameborder="0" 
             allow="autoplay; encrypted-media">
         </iframe>
-        <div class="hero-overlay"></div>
-        <div class="relative z-10 px-4">
-            <h2 class="text-4xl sm:text-5xl md:text-7xl font-black text-white leading-tight mb-4">Elevate Your Digital Presence.</h2>
-            <p class="text-lg md:text-xl text-gray-300 max-w-3xl mx-auto mb-8">We connect visionary brands and personalities with an elite network of certified social media professionals to create unparalleled growth and engagement.</p>
-            <a href="#pricing" class="bg-blue-600 text-white font-bold py-4 px-10 rounded-lg text-lg cta-button">Generate Your Growth Plan</a>
+        <div class="absolute inset-0 bg-gradient-radial from-black/20 via-black/40 to-black/70 z-1"></div>
+        <div id="hero-3d" class="absolute inset-0 z-2">
+            <div class="model-loading">Loading 3D models...</div>
+        </div>
+        <div class="relative z-10 text-center px-6 max-w-4xl mx-auto text-white">
+            <h2 class="hero-title mb-6 text-white">
+                Elevate Your <br>
+                <span style="color: #007AFF;">Digital Presence</span>
+            </h2>
+            <p class="text-xl md:text-2xl text-gray-200 mb-8 max-w-3xl mx-auto font-light">
+                Connect with an elite network of certified social media professionals to create unparalleled growth and engagement.
+            </p>
+            <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                <a href="#pricing" class="btn-primary text-lg px-8 py-4">Generate Growth Plan</a>
+                <a href="#services" class="btn-secondary text-lg px-8 py-4 bg-white/10 border-white/30 text-white hover:bg-white hover:text-black">Learn More</a>
+            </div>
         </div>
     </section>
 
     <!-- Services Section -->
-    <section id="services" class="py-20 bg-black">
-        <div class="container mx-auto px-6 text-center">
-            <div class="reveal">
-                <h3 class="text-4xl font-bold mb-4 text-white">Our Core Disciplines</h3>
-                <p class="text-gray-400 max-w-2xl mx-auto mb-12">Comprehensive solutions designed for maximum impact.</p>
+    <section id="services" class="py-24 bg-gray-50">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="text-center mb-16 reveal">
+                <h3 class="section-title mb-4">Our Core Disciplines</h3>
+                <p class="text-xl text-gray-600 max-w-2xl mx-auto">
+                    Comprehensive solutions designed for maximum impact and measurable results.
+                </p>
             </div>
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                <!-- Card 1 -->
-                <div class="glassmorphism p-8 rounded-2xl border border-transparent transition duration-300 feature-card reveal">
-                    <div class="mb-6 inline-block p-4 bg-gray-800 rounded-full">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                          <path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <!-- Social Media Management -->
+                <div class="feature-card reveal">
+                    <div class="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center mb-6">
+                        <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
                         </svg>
                     </div>
-                    <h4 class="text-2xl font-bold mb-3 text-white">Social Media Management</h4>
-                    <p class="text-gray-400">End-to-end management of your social channels. We handle content creation, scheduling, community engagement, and analytics to build a thriving online presence.</p>
+                    <h4 class="text-xl font-semibold mb-3">Social Media Management</h4>
+                    <p class="text-gray-600 mb-6">
+                        End-to-end management of your social channels with strategic content creation, community engagement, and performance analytics.
+                    </p>
+                    <div class="text-sm text-blue-600 font-medium">
+                        Strategy • Content • Analytics
+                    </div>
                 </div>
-                <!-- Card 2 -->
-                <div class="glassmorphism p-8 rounded-2xl border border-transparent transition duration-300 feature-card reveal" style="transition-delay: 200ms;">
-                    <div class="mb-6 inline-block p-4 bg-gray-800 rounded-full">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                          <path stroke-linecap="round" stroke-linejoin="round" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+
+                <!-- Performance Marketing -->
+                <div class="feature-card reveal" style="transition-delay: 0.1s;">
+                    <div class="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center mb-6">
+                        <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
                         </svg>
                     </div>
-                    <h4 class="text-2xl font-bold mb-3 text-white">Performance Marketing</h4>
-                    <p class="text-gray-400">Data-driven ad campaigns that deliver measurable ROI. Our analysts are experts in optimizing for conversions, leads, and brand awareness across all major platforms.</p>
+                    <h4 class="text-xl font-semibold mb-3">Performance Marketing</h4>
+                    <p class="text-gray-600 mb-6">
+                        Data-driven advertising campaigns optimized for conversions, lead generation, and brand awareness across all platforms.
+                    </p>
+                    <div class="text-sm text-green-600 font-medium">
+                        ROI Focused • Multi-Platform • AI-Powered
+                    </div>
                 </div>
-                <!-- Card 3 -->
-                <div class="glassmorphism p-8 rounded-2xl border border-transparent transition duration-300 feature-card reveal" style="transition-delay: 400ms;">
-                     <div class="mb-6 inline-block p-4 bg-gray-800 rounded-full">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                          <path stroke-linecap="round" stroke-linejoin="round" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
+
+                <!-- Event Media Coverage -->
+                <div class="feature-card reveal" style="transition-delay: 0.2s;">
+                    <div class="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center mb-6">
+                        <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
                         </svg>
                     </div>
-                    <h4 class="text-2xl font-bold mb-3 text-white">Event Media Coverage</h4>
-                    <p class="text-gray-400">Capture your live events with our professional media network. From technical setup to cinematic videography and editing, we create assets that extend your event's reach.</p>
+                    <h4 class="text-xl font-semibold mb-3">Event Media Coverage</h4>
+                    <p class="text-gray-600 mb-6">
+                        Professional event documentation with cinematic videography, live streaming, and comprehensive media packages.
+                    </p>
+                    <div class="text-sm text-purple-600 font-medium">
+                        Cinema Quality • Live Streaming • 360° Coverage
+                    </div>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Our Network Section -->
-    <section id="network" class="py-20 overflow-hidden">
-        <div class="container mx-auto px-6 flex flex-col md:flex-row items-center gap-12">
-            <div class="md:w-1/2 reveal">
-                <img src="network.png" class="rounded-2xl shadow-2xl" alt="Nafamzy Network Professionals" onerror="this.onerror=null;this.src='https://placehold.co/600x400/111111/e5e5e5.png?text=Our+Global+Network';">
-            </div>
-            <div class="md:w-1/2 reveal" style="transition-delay: 200ms;">
-                <h3 class="text-4xl font-bold mb-4 text-white">The Power of the Network</h3>
-                <p class="text-gray-400 mb-6">Nafamzy isn't an agency; it's an exclusive ecosystem. Our members are rigorously vetted, fully certified, and continuously trained social media managers, analysts, and creative gurus. When you partner with us, you don't get a single employee—you get a dedicated team of specialists, perfectly matched to your brand's unique needs and goals.</p>
-                <a href="join.html" class="text-blue-400 font-semibold hover:text-blue-300 transition">Are you a professional? Join our network &rarr;</a>
+    <!-- Network Section -->
+    <section id="network" class="py-24 parallax-section bg-white">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+                <div class="reveal">
+                    <img src="network.png" 
+                         class="rounded-2xl shadow-2xl w-full" 
+                         alt="Nafamzy Network Professionals"
+                         onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=800&h=600&fit=crop&crop=faces';">
+                </div>
+                <div class="reveal" style="transition-delay: 0.2s;">
+                    <h3 class="section-title mb-6" style="color: #1f2937 !important;">The Power of the Network</h3>
+                    <p class="text-xl text-gray-600 mb-8 leading-relaxed">
+                        Nafamzy isn't just an agency—it's an exclusive ecosystem of rigorously vetted, certified social media professionals. When you partner with us, you gain access to a dedicated team of specialists perfectly matched to your brand's unique needs.
+                    </p>
+                    
+                    <div class="grid grid-cols-2 gap-6 mb-8">
+                        <div class="text-center">
+                            <div class="text-3xl font-bold text-blue-600 stat-number" data-target="500">0</div>
+                            <div class="text-gray-600">Vetted Professionals</div>
+                        </div>
+                        <div class="text-center">
+                            <div class="text-3xl font-bold text-blue-600 stat-number" data-target="98">0</div>
+                            <div class="text-gray-600">Client Satisfaction</div>
+                        </div>
+                    </div>
+                    
+                    <a href="join.html" class="btn-secondary">Apply to Join</a>
+                </div>
             </div>
         </div>
     </section>
 
-    <!-- Pricing / Get Started Section -->
-    <section id="pricing" class="py-20">
-        <div class="container mx-auto px-6 text-center">
-            <div class="reveal">
-                <h3 class="text-4xl font-bold text-white mb-4">Craft Your Custom Growth Strategy</h3>
-                <p class="text-gray-400 max-w-2xl mx-auto mb-12">Answer a few questions to generate a personalized plan and pricing reference. This will help us prepare for our strategy call.</p>
+    <!-- Pricing Section - Apple Style Product Introduction -->
+    <section id="pricing" class="py-32 bg-white relative overflow-hidden">
+        <div class="max-w-6xl mx-auto px-6">
+            <!-- Hero Introduction -->
+            <div class="text-center mb-24 reveal">
+                <h3 class="text-6xl md:text-8xl font-bold mb-8 leading-tight" style="color: #1f2937 !important;">
+                    Craft Your<br>
+                    <span class="text-blue-600">Growth Strategy</span>
+                </h3>
+                <p class="text-2xl md:text-3xl text-gray-600 max-w-4xl mx-auto font-light leading-relaxed">
+                    Answer a few questions to generate a personalized plan and pricing estimate.<br>
+                    <span class="text-gray-400">It takes less than 2 minutes.</span>
+                </p>
             </div>
 
-            <div id="pricing-calculator" class="max-w-4xl mx-auto text-left glassmorphism rounded-2xl p-8 md:p-12 reveal">
-                <!-- Step 1: Core Service -->
-                <div id="step1">
-                    <h4 class="text-2xl font-semibold mb-6 text-white text-center">What is your primary goal?</h4>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        
-                        <!-- Card: Build It -->
-                        <div class="pricing-option goal-card rounded-2xl cursor-pointer" data-value="BUILD">
-                            <img src="build.png" alt="Build a new social media presence from scratch" class="absolute h-full w-full object-cover" onerror="this.onerror=null;this.src='https://placehold.co/1024x1024/1a1a1a/ffffff.png?text=Build+It';">
-                            <div class="goal-card-overlay"></div>
-                            <div class="relative p-6 flex flex-col justify-end h-80">
-                                <h3 class="text-xl font-bold text-white">Build It</h3>
-                                <p class="text-sm text-gray-300">Create a powerful presence from the ground up.</p>
+            <!-- Interactive Calculator -->
+            <div id="pricing-calculator" class="max-w-5xl mx-auto">
+                <!-- Step 1: Primary Goal -->
+                <div id="step1" class="reveal">
+                    <div class="text-center mb-16">
+                        <h4 class="text-4xl md:text-5xl font-semibold mb-6 text-gray-900">What is your primary goal?</h4>
+                        <p class="text-xl text-gray-600">Choose the path that best describes your current situation.</p>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
+                        <div class="goal-card group cursor-pointer" data-value="BUILD">
+                            <div class="relative overflow-hidden rounded-3xl aspect-[4/3] mb-6">
+                                <img src="build.png" 
+                                     alt="Build new social media presence" 
+                                     class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                                     onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1611224923853-80b023f02d71?w=800&h=600&fit=crop';">
+                                <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
+                                <div class="absolute bottom-6 left-6 text-white">
+                                    <h3 class="text-2xl font-semibold mb-2">Build It</h3>
+                                    <p class="text-gray-200">Create a powerful presence from the ground up</p>
+                                </div>
                             </div>
                         </div>
 
-                        <!-- Card: Fix It -->
-                        <div class="pricing-option goal-card rounded-2xl cursor-pointer" data-value="FIX">
-                            <img src="fix.png" alt="Fix or improve an existing social media strategy" class="absolute h-full w-full object-cover" onerror="this.onerror=null;this.src='https://placehold.co/1024x1024/1a1a1a/ffffff.png?text=Fix+It';">
-                            <div class="goal-card-overlay"></div>
-                            <div class="relative p-6 flex flex-col justify-end h-80">
-                                <h3 class="text-xl font-bold text-white">Fix It</h3>
-                                <p class="text-sm text-gray-300">Overhaul and optimize your current strategy.</p>
+                        <div class="goal-card group cursor-pointer" data-value="FIX">
+                            <div class="relative overflow-hidden rounded-3xl aspect-[4/3] mb-6">
+                                <img src="fix.png" 
+                                     alt="Fix existing social media strategy" 
+                                     class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                                     onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&h=600&fit=crop';">
+                                <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
+                                <div class="absolute bottom-6 left-6 text-white">
+                                    <h3 class="text-2xl font-semibold mb-2">Fix It</h3>
+                                    <p class="text-gray-200">Optimize and improve your current strategy</p>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Step 2: Media Coverage Add-on -->
+                <!-- Step 2: Media Coverage -->
                 <div id="step2" class="hidden">
-                    <h4 class="text-2xl font-semibold mb-2 text-white">Need Professional Event Coverage?</h4>
-                    <p class="text-gray-400 mb-6">Our media network can handle everything from small meetups to large-scale conferences.</p>
-                    <div class="flex space-x-4">
-                        <button id="add-media-yes" class="w-full bg-blue-600 text-white font-bold py-3 px-5 rounded-lg cta-button">Yes, add media coverage</button>
-                        <button id="add-media-no" class="w-full bg-gray-700 hover:bg-gray-600 text-white font-bold py-3 px-5 rounded-lg transition">No, not at this time</button>
+                    <div class="text-center max-w-3xl mx-auto">
+                        <h4 class="text-4xl md:text-5xl font-semibold mb-6 text-gray-900">Professional Event Coverage?</h4>
+                        <p class="text-xl text-gray-600 mb-12 leading-relaxed">
+                            Our media network captures everything from intimate gatherings to large-scale conferences with cinematic quality.
+                        </p>
+                        <div class="flex flex-col sm:flex-row gap-6 max-w-lg mx-auto">
+                            <button id="add-media-yes" class="btn-primary flex-1 py-4 text-lg">Yes, include coverage</button>
+                            <button id="add-media-no" class="btn-secondary flex-1 py-4 text-lg">Not right now</button>
+                        </div>
                     </div>
                 </div>
 
-                <!-- Step 3: Media Coverage Details -->
+                <!-- Step 3: Event Details -->
                 <div id="step3" class="hidden">
-                    <h4 class="text-2xl font-semibold mb-6 text-white">Tell us about your event.</h4>
-                    <div class="space-y-6">
-                        <div>
-                            <label class="font-semibold text-gray-300">Estimated Audience Size</label>
-                            <select id="audience-size" class="w-full mt-2 p-3 bg-gray-900 border-2 border-gray-700 rounded-lg focus:outline-none focus:border-blue-500">
+                    <div class="text-center mb-12">
+                        <h4 class="text-4xl md:text-5xl font-semibold mb-6 text-gray-900">Tell us about your event</h4>
+                        <p class="text-xl text-gray-600">Help us understand your requirements for accurate pricing.</p>
+                    </div>
+                    
+                    <div class="max-w-2xl mx-auto space-y-8">
+                        <div class="space-y-3">
+                            <label class="block text-lg font-medium text-gray-800">Estimated Audience Size</label>
+                            <select id="audience-size" class="w-full p-4 text-lg border-2 border-gray-200 rounded-2xl focus:border-blue-500 focus:outline-none bg-gray-50">
                                 <option value="A1">Under 100</option>
                                 <option value="A2">100 - 500</option>
                                 <option value="A3">500 - 2,000</option>
                                 <option value="A4">2,000+</option>
                             </select>
                         </div>
-                        <div>
-                            <label class="font-semibold text-gray-300">Event Duration</label>
-                            <select id="event-duration" class="w-full mt-2 p-3 bg-gray-900 border-2 border-gray-700 rounded-lg focus:outline-none focus:border-blue-500">
+                        
+                        <div class="space-y-3">
+                            <label class="block text-lg font-medium text-gray-800">Event Duration</label>
+                            <select id="event-duration" class="w-full p-4 text-lg border-2 border-gray-200 rounded-2xl focus:border-blue-500 focus:outline-none bg-gray-50">
                                 <option value="D1">Half-day (up to 4 hours)</option>
                                 <option value="D2">Full-day (up to 8 hours)</option>
                                 <option value="D3">Multi-day (2-3 days)</option>
                             </select>
                         </div>
-                        <div>
-                            <label class="font-semibold text-gray-300">Final Edited Video Length</label>
-                            <select id="edit-duration" class="w-full mt-2 p-3 bg-gray-900 border-2 border-gray-700 rounded-lg focus:outline-none focus:border-blue-500">
+                        
+                        <div class="space-y-3">
+                            <label class="block text-lg font-medium text-gray-800">Final Video Length</label>
+                            <select id="edit-duration" class="w-full p-4 text-lg border-2 border-gray-200 rounded-2xl focus:border-blue-500 focus:outline-none bg-gray-50">
                                 <option value="E1">Highlight Reel (1-3 mins)</option>
                                 <option value="E2">Promotional Video (5-10 mins)</option>
                                 <option value="E3">Full Coverage (30+ mins)</option>
                             </select>
                         </div>
-                         <div>
-                            <label class="font-semibold text-gray-300">Payment Plan</label>
-                            <select id="payment-plan" class="w-full mt-2 p-3 bg-gray-900 border-2 border-gray-700 rounded-lg focus:outline-none focus:border-blue-500">
-                                <option value="P1">One-off Payment</option>
-                                <option value="P1Y">1 Year Plan (Bundle & Save)</option>
-                                <option value="P5Y">5 Year Plan (Best Value)</option>
-                                <option value="P10Y">10 Year Plan (Ultimate Partnership)</option>
+                        
+                        <div class="space-y-3">
+                            <label class="block text-lg font-medium text-gray-800">Payment Plan</label>
+                            <select id="payment-plan" class="w-full p-4 text-lg border-2 border-gray-200 rounded-2xl focus:border-blue-500 focus:outline-none bg-gray-50">
+                                <option value="P1">One-time Payment</option>
+                                <option value="P1Y">1 Year Plan (Save 15%)</option>
+                                <option value="P5Y">5 Year Plan (Save 25%)</option>
+                                <option value="P10Y">10 Year Plan (Save 35%)</option>
                             </select>
                         </div>
                     </div>
-                    <button id="generate-plan-button" class="w-full mt-8 bg-blue-600 text-white font-bold py-3 px-5 rounded-lg cta-button">Generate My Plan</button>
+                    
+                    <div class="text-center mt-12">
+                        <button id="generate-plan-button" class="btn-primary py-4 px-12 text-xl">Generate My Custom Plan</button>
+                    </div>
                 </div>
 
                 <!-- Step 4: Results -->
                 <div id="results" class="hidden text-center">
-                    <h4 class="text-2xl font-semibold text-white">Your Custom Plan is Ready!</h4>
-                    <p class="text-gray-400 mt-2 mb-6">Your unique reference ID helps us tailor our upcoming strategy call to your exact needs.</p>
-                    <div class="bg-gray-900 rounded-lg p-6">
-                        <p class="text-gray-400">Reference ID:</p>
-                        <p id="ref-number" class="text-3xl font-bold text-blue-400 tracking-widest"></p>
-                        <p class="text-gray-400 mt-4">Pricing Estimate:</p>
-                        <p id="price-estimate" class="text-4xl font-bold text-white"></p>
+                    <div class="mb-12">
+                        <h4 class="text-4xl md:text-5xl font-semibold mb-6 text-gray-900">Your Plan is Ready</h4>
+                        <p class="text-xl text-gray-600">Use this reference ID during our strategy call for personalized recommendations.</p>
                     </div>
-                    <p class="text-sm text-gray-500 mt-4">*This is an initial estimate. Final pricing will be confirmed during our call.</p>
-                    <button id="book-call-button" class="w-full mt-6 bg-blue-600 text-white font-bold py-3 px-5 rounded-lg cta-button">Next Step: Book Your Call</button>
+                    
+                    <div class="bg-gray-50 rounded-3xl p-12 mb-12 max-w-2xl mx-auto">
+                        <div class="mb-8">
+                            <div class="text-sm text-gray-500 mb-2 uppercase tracking-wider">Reference ID</div>
+                            <div id="ref-number" class="text-3xl font-mono font-bold text-blue-600 tracking-wider"></div>
+                        </div>
+                        <div>
+                            <div class="text-sm text-gray-500 mb-2 uppercase tracking-wider">Estimated Investment</div>
+                            <div id="price-estimate" class="text-5xl font-bold text-gray-900"></div>
+                        </div>
+                    </div>
+                    
+                    <p class="text-gray-500 mb-8">*Final pricing confirmed during our consultation</p>
+                    <button id="book-call-button" class="btn-primary py-4 px-12 text-xl">Schedule Strategy Call</button>
                 </div>
             </div>
         </div>
     </section>
 
     <!-- Footer -->
-    <footer id="contact" class="py-16">
-        <div class="container mx-auto px-6 text-center text-gray-400">
-            <h3 class="text-3xl font-black text-white tracking-wider mb-4">NAFAMZY</h3>
-            <p class="mb-6">Connect with us. Let's build something remarkable.</p>
-            <div class="flex justify-center items-center space-x-6 mb-8">
-                <a href="https://instagram.com/nafamzy.shark" target="_blank" class="hover:text-white transition">
-                    <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                        <path fill-rule="evenodd" d="M12.315 2c2.43 0 2.784.013 3.808.06 1.064.049 1.791.218 2.427.465a4.902 4.902 0 011.772 1.153 4.902 4.902 0 011.153 1.772c.247.636.416 1.363.465 2.427.048 1.024.06 1.378.06 3.808s-.012 2.784-.06 3.808c-.049 1.064-.218 1.791-.465 2.427a4.902 4.902 0 01-1.153 1.772 4.902 4.902 0 01-1.772 1.153c-.636.247-1.363.416-2.427.465-1.024.048-1.378.06-3.808.06s-2.784-.013-3.808-.06c-1.064-.049-1.791-.218-2.427-.465a4.902 4.902 0 01-1.772-1.153 4.902 4.902 0 01-1.153-1.772c-.247-.636-.416-1.363-.465-2.427-.048-1.024-.06-1.378-.06-3.808s.012-2.784.06-3.808c.049-1.064.218-1.791.465-2.427a4.902 4.902 0 011.153-1.772A4.902 4.902 0 016.344 2.525c.636-.247 1.363-.416 2.427-.465C9.792 2.013 10.146 2 12.315 2zm-1.161 1.545c-2.316 0-2.634.01-3.555.056a3.372 3.372 0 00-1.895.67c-.672.45-1.19 1.01-1.64 1.64-.45.64-.62 1.22-.67 1.895-.046.92-.056 1.24-.056 3.555s.01 2.635.056 3.555c.05.675.22 1.255.67 1.895.45.63.97 1.19 1.64 1.64.64.45 1.22.62 1.895.67.92.046 1.24.056 3.555.056s2.635-.01 3.555-.056c.675-.05 1.255-.22 1.895-.67.63-.45 1.19-.97 1.64-1.64.45-.64.62-1.22.67-1.895.046-.92.056-1.24.056-3.555s-.01-2.635-.056-3.555c-.05-.675-.22-1.255-.67-1.895-.45-.63-.97-1.19-1.64-1.64-.64-.45-1.22-.62-1.895-.67-.92-.046-1.239-.056-3.555-.056zm0 3.822a4.408 4.408 0 100 8.816 4.408 4.408 0 000-8.816zm0 7.272a2.864 2.864 0 110-5.728 2.864 2.864 0 010 5.728zm5.405-7.163a1.032 1.032 0 100 2.064 1.032 1.032 0 000-2.064z" clip-rule="evenodd" />
+    <footer id="contact" class="py-16 bg-black text-white">
+        <div class="max-w-7xl mx-auto px-6 text-center">
+            <h3 class="text-2xl font-semibold mb-4">Nafamzy</h3>
+            <p class="text-gray-400 mb-8 max-w-lg mx-auto">
+                Connect with us to build something remarkable for your brand.
+            </p>
+            
+            <div class="flex justify-center space-x-6 mb-8">
+                <a href="https://instagram.com/nafamzy.shark" target="_blank" 
+                   class="w-12 h-12 bg-gray-800 rounded-xl flex items-center justify-center hover:bg-gray-700 transition">
+                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M12.315 2c2.43 0 2.784.013 3.808.06 1.064.049 1.791.218 2.427.465a4.902 4.902 0 011.772 1.153 4.902 4.902 0 011.153 1.772c.247.636.416 1.363.465 2.427.048 1.024.06 1.378.06 3.808s-.012 2.784-.06 3.808c-.049 1.064-.218 1.791-.465 2.427a4.902 4.902 0 01-1.153 1.772 4.902 4.902 0 01-1.772 1.153c-.636.247-1.363.416-2.427.465-1.024.048-1.378.06-3.808.06s-2.784-.013-3.808-.06c-1.064-.049-1.791-.218-2.427-.465a4.902 4.902 0 01-1.772-1.153 4.902 4.902 0 01-1.153-1.772c-.247-.636-.416-1.363-.465-2.427-.048-1.024-.06-1.378-.06-3.808s.012-2.784.06-3.808c.049-1.064.218-1.791.465-2.427a4.902 4.902 0 011.153-1.772A4.902 4.902 0 016.344 2.525c.636-.247 1.363-.416 2.427-.465C9.792 2.013 10.146 2 12.315 2z"/>
                     </svg>
-                    <span class="sr-only">Instagram</span>
                 </a>
-                <a href="mailto:join@nafamzy.com" class="hover:text-white transition">
-                    <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path d="M1.75 3h20.5c.966 0 1.75.784 1.75 1.75v14.5A1.75 1.75 0 0122.25 21H1.75A1.75 1.75 0 010 19.25V4.75C0 3.784.784 3 1.75 3zM2.5 4.5v.815l9.5 6.333 9.5-6.333V4.5h-19zM2.5 19.5h19V7.185l-9.5 6.333-9.5-6.333V19.5z"/></svg>
-                    <span class="sr-only">Email</span>
+                <a href="mailto:join@nafamzy.com" 
+                   class="w-12 h-12 bg-gray-800 rounded-xl flex items-center justify-center hover:bg-gray-700 transition">
+                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M1.75 3h20.5c.966 0 1.75.784 1.75 1.75v14.5A1.75 1.75 0 0122.25 21H1.75A1.75 1.75 0 010 19.25V4.75C0 3.784.784 3 1.75 3z"/>
+                    </svg>
                 </a>
             </div>
-            <p class="text-sm">© <span id="year"></span> Nafamzy. All rights reserved.</p>
+            
+            <div class="text-sm text-gray-500">
+                © <span id="year"></span> Nafamzy. All rights reserved.
+            </div>
         </div>
     </footer>
 
     <!-- Lead Capture Modal -->
-    <div id="lead-capture-modal" class="hidden fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50 p-4">
-        <div class="glassmorphism rounded-2xl p-8 max-w-md w-full text-center relative">
-            <button id="close-lead-modal" class="absolute top-2 right-2 text-gray-400 hover:text-white text-4xl leading-none">&times;</button>
-            <h3 class="text-2xl font-bold text-white mb-4">One Last Step...</h3>
-            <p class="text-gray-400 mb-6">Enter your details below to lock in your reference ID and proceed to scheduling.</p>
-            <form id="lead-form">
-                <input type="text" id="user-name" placeholder="Your Name" class="w-full mb-4 p-3 bg-gray-900 border-2 border-gray-700 rounded-lg focus:outline-none focus:border-blue-500" required>
-                <input type="email" id="user-email" placeholder="Your Email Address" class="w-full mb-6 p-3 bg-gray-900 border-2 border-gray-700 rounded-lg focus:outline-none focus:border-blue-500" required>
-                <button type="submit" class="w-full bg-blue-600 text-white font-bold py-3 px-5 rounded-lg cta-button">Proceed to Booking</button>
+    <div id="lead-modal" class="modal hidden">
+        <div class="modal-content">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-xl font-semibold">Complete Your Request</h3>
+                <button id="close-lead-modal" class="text-gray-400 hover:text-gray-600">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+            
+            <form id="lead-form" class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Your Name</label>
+                    <input type="text" id="user-name" class="form-input" required>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Email Address</label>
+                    <input type="email" id="user-email" class="form-input" required>
+                </div>
+                <button type="submit" class="w-full btn-primary py-3">Continue to Booking</button>
             </form>
         </div>
     </div>
-    
+
     <!-- Calendly Modal -->
-    <div id="calendly-modal" class="hidden fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50 p-4">
-        <div class="bg-gray-900 rounded-2xl p-2 max-w-4xl w-full h-full max-h-[700px] text-center relative no-scrollbar overflow-y-auto">
-             <button id="close-calendly-modal" class="absolute top-2 right-4 text-gray-400 hover:text-white text-4xl z-10 leading-none">&times;</button>
-            <h3 class="text-2xl font-bold text-white mb-4 pt-4">Schedule Your Strategy Call</h3>
-            <p class="text-gray-400 mb-2">We've received your info! A confirmation will be sent to your email.</p>
-            <p class="text-gray-400 mb-4">Your Reference ID: <strong id="final-ref" class="text-blue-400"></strong></p>
-            <!-- Calendly inline widget begin -->
-            <div class="calendly-inline-widget w-full h-[550px]" data-url="https://calendly.com/d/cn3z-28f-gq3/nafamzy-social-media-consultation" ></div>
+    <div id="calendly-modal" class="modal hidden">
+        <div class="modal-content max-w-4xl w-full h-full max-h-[80vh]">
+            <div class="flex justify-between items-center mb-4">
+                <div>
+                    <h3 class="text-xl font-semibold">Schedule Your Strategy Call</h3>
+                    <p class="text-sm text-gray-600">Reference ID: <span id="final-ref" class="font-mono text-blue-600"></span></p>
+                </div>
+                <button id="close-calendly-modal" class="text-gray-400 hover:text-gray-600">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+            
+            <div class="calendly-inline-widget h-[600px] rounded-lg overflow-hidden" 
+                 data-url="https://calendly.com/d/cn3z-28f-gq3/nafamzy-social-media-consultation"></div>
             <script type="text/javascript" src="https://assets.calendly.com/assets/external/widget.js" async></script>
-            <!-- Calendly inline widget end -->
         </div>
     </div>
 
     <script>
+        // Initialize GSAP
+        gsap.registerPlugin(ScrollTrigger);
+
+        // Set current year
         document.getElementById('year').textContent = new Date().getFullYear();
 
-        // Mobile menu toggle
-        const mobileMenuButton = document.getElementById('mobile-menu-button');
-        const mobileMenu = document.getElementById('mobile-menu');
-        mobileMenuButton.addEventListener('click', () => {
-            mobileMenu.classList.toggle('hidden');
+        // Header color change on scroll
+        const header = document.querySelector('header');
+        const heroSection = document.querySelector('section'); // First section is hero
+
+        function updateHeaderColor() {
+            const heroBottom = heroSection.offsetTop + heroSection.offsetHeight;
+            const scrollPosition = window.scrollY + 100; // Add offset for early transition
+            
+            if (scrollPosition > heroBottom) {
+                header.classList.add('header-light');
+            } else {
+                header.classList.remove('header-light');
+            }
+        }
+
+        // Update on scroll
+        window.addEventListener('scroll', updateHeaderColor);
+        // Update on load
+        updateHeaderColor();
+
+        // Scroll progress indicator
+        window.addEventListener('scroll', () => {
+            const scrolled = (window.scrollY / (document.documentElement.scrollHeight - window.innerHeight)) * 100;
+            document.querySelector('.scroll-indicator').style.width = scrolled + '%';
         });
 
-        // Pricing Calculator Logic
-        const step1 = document.getElementById('step1');
-        const step2 = document.getElementById('step2');
-        const step3 = document.getElementById('step3');
-        const results = document.getElementById('results');
+        // 3D Scene with GLB models
+        let scene, camera, renderer, drone, c1Model, mixer;
+        const clock = new THREE.Clock();
 
+        function init3D() {
+            scene = new THREE.Scene();
+            camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+            renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setClearColor(0x000000, 0);
+            renderer.outputEncoding = THREE.sRGBEncoding;
+            renderer.toneMapping = THREE.ACESFilmicToneMapping;
+            renderer.toneMappingExposure = 1;
+            document.getElementById('hero-3d').appendChild(renderer.domElement);
+
+            // Lighting setup
+            const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
+            scene.add(ambientLight);
+
+            const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
+            directionalLight.position.set(5, 5, 5);
+            directionalLight.castShadow = true;
+            scene.add(directionalLight);
+
+            const pointLight = new THREE.PointLight(0x007AFF, 0.5, 100);
+            pointLight.position.set(-5, 0, 5);
+            scene.add(pointLight);
+
+            // Multiple GLTFLoader loading strategies
+            loadModels();
+
+            camera.position.z = 10;
+            camera.position.y = 3;
+
+            animate3D();
+        }
+
+        let modelsLoaded = 0;
+        let loadingAttempts = 0;
+
+        function loadModels() {
+            console.log('Starting model loading...');
+            
+            // Strategy 1: Try with script-loaded GLTFLoader
+            if (typeof THREE.GLTFLoader !== 'undefined') {
+                console.log('Using script-loaded GLTFLoader');
+                loadWithLoader(new THREE.GLTFLoader());
+                return;
+            }
+
+            // Strategy 2: Try dynamic import from CDN
+            const cdnUrls = [
+                'https://unpkg.com/three@0.128.0/examples/jsm/loaders/GLTFLoader.js',
+                'https://cdn.jsdelivr.net/npm/three@0.128.0/examples/jsm/loaders/GLTFLoader.js',
+                'https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/GLTFLoader.js'
+            ];
+
+            tryLoadFromCDN(cdnUrls, 0);
+        }
+
+        function tryLoadFromCDN(urls, index) {
+            if (index >= urls.length) {
+                console.log('All CDN attempts failed, creating fallback models');
+                createFallbackModels();
+                return;
+            }
+
+            console.log(`Trying CDN ${index + 1}: ${urls[index]}`);
+            
+            import(urls[index]).then(({ GLTFLoader }) => {
+                console.log(`Successfully loaded GLTFLoader from CDN ${index + 1}`);
+                loadWithLoader(new GLTFLoader());
+            }).catch(error => {
+                console.log(`CDN ${index + 1} failed:`, error);
+                tryLoadFromCDN(urls, index + 1);
+            });
+        }
+
+        function loadWithLoader(loader) {
+            loadingAttempts++;
+            console.log(`Loading attempt ${loadingAttempts}`);
+            
+            // Try multiple file path variations
+            const filePaths = [
+                ['./drone.glb', './c1.glb'], // Same directory
+                ['drone.glb', 'c1.glb'], // Same directory without ./
+                ['/drone.glb', '/c1.glb'], // Root directory
+                ['assets/drone.glb', 'assets/c1.glb'], // Assets folder
+                ['models/drone.glb', 'models/c1.glb'], // Models folder
+            ];
+
+            tryLoadPaths(loader, filePaths, 0);
+        }
+
+        function tryLoadPaths(loader, paths, pathIndex) {
+            if (pathIndex >= paths.length) {
+                console.log('All file paths failed, creating fallback models');
+                createFallbackModels();
+                return;
+            }
+
+            const [dronePath, c1Path] = paths[pathIndex];
+            console.log(`Trying paths: ${dronePath}, ${c1Path}`);
+
+            // Load drone
+            loader.load(
+                dronePath,
+                (gltf) => {
+                    console.log('Drone model loaded successfully from:', dronePath);
+                    drone = gltf.scene;
+                    drone.scale.setScalar(1.5);
+                    drone.position.set(-4, 1, 2);
+                    scene.add(drone);
+                    updateLoadingStatus();
+                },
+                (progress) => {
+                    console.log('Drone loading progress:', Math.round((progress.loaded / progress.total) * 100) + '%');
+                },
+                (error) => {
+                    console.log('Drone loading failed from path:', dronePath, error);
+                    createFallbackDrone();
+                    updateLoadingStatus();
+                }
+            );
+
+            // Load C1
+            loader.load(
+                c1Path,
+                (gltf) => {
+                    console.log('C1 model loaded successfully from:', c1Path);
+                    c1Model = gltf.scene;
+                    c1Model.scale.setScalar(0.8);
+                    c1Model.position.set(4, 0, 1);
+                    scene.add(c1Model);
+                    
+                    // Setup animation mixer if animations exist
+                    if (gltf.animations.length > 0) {
+                        mixer = new THREE.AnimationMixer(c1Model);
+                        gltf.animations.forEach((clip) => {
+                            mixer.clipAction(clip).play();
+                        });
+                    }
+                    updateLoadingStatus();
+                },
+                (progress) => {
+                    console.log('C1 loading progress:', Math.round((progress.loaded / progress.total) * 100) + '%');
+                },
+                (error) => {
+                    console.log('C1 loading failed from path:', c1Path, error);
+                    createFallbackC1();
+                    updateLoadingStatus();
+                }
+            );
+
+            // If both fail, try next path set after a delay
+            setTimeout(() => {
+                if (modelsLoaded < 2 && loadingAttempts === 1) {
+                    tryLoadPaths(loader, paths, pathIndex + 1);
+                }
+            }, 3000);
+        }
+
+        function createFallbackModels() {
+            createFallbackDrone();
+            createFallbackC1();
+            updateLoadingStatus();
+            updateLoadingStatus(); // Call twice for both models
+        }
+
+        function updateLoadingStatus() {
+            modelsLoaded++;
+            console.log(`Models loaded: ${modelsLoaded}/2`);
+            if (modelsLoaded >= 2) {
+                const loadingElement = document.querySelector('.model-loading');
+                if (loadingElement) {
+                    loadingElement.style.display = 'none';
+                    console.log('All models loaded, hiding loading indicator');
+                }
+            }
+        }
+
+        function createFallbackDrone() {
+            console.log('Creating fallback drone model');
+            const geometry = new THREE.BoxGeometry(2, 0.2, 2);
+            const material = new THREE.MeshLambertMaterial({ 
+                color: 0x333333,
+                transparent: true,
+                opacity: 0.7
+            });
+            drone = new THREE.Mesh(geometry, material);
+            
+            // Add simple propellers
+            const propGeometry = new THREE.CylinderGeometry(0.3, 0.3, 0.05, 8);
+            const propMaterial = new THREE.MeshLambertMaterial({ color: 0x666666 });
+            
+            const positions = [[-0.8, 0.2, -0.8], [0.8, 0.2, -0.8], [-0.8, 0.2, 0.8], [0.8, 0.2, 0.8]];
+            positions.forEach(pos => {
+                const prop = new THREE.Mesh(propGeometry, propMaterial);
+                prop.position.set(...pos);
+                drone.add(prop);
+            });
+            
+            drone.position.set(-4, 1, 2);
+            scene.add(drone);
+        }
+
+        function createFallbackC1() {
+            console.log('Creating fallback camera model');
+            // Create camera-like shape since c1.glb appears to be a camera
+            const bodyGeometry = new THREE.BoxGeometry(1.2, 0.8, 0.6);
+            const bodyMaterial = new THREE.MeshLambertMaterial({ 
+                color: 0x222222,
+                transparent: true,
+                opacity: 0.8
+            });
+            const body = new THREE.Mesh(bodyGeometry, bodyMaterial);
+            
+            // Lens
+            const lensGeometry = new THREE.CylinderGeometry(0.4, 0.4, 0.3, 16);
+            const lensMaterial = new THREE.MeshLambertMaterial({ color: 0x111111 });
+            const lens = new THREE.Mesh(lensGeometry, lensMaterial);
+            lens.rotation.z = Math.PI / 2;
+            lens.position.set(0, 0, 0.45);
+            
+            c1Model = new THREE.Group();
+            c1Model.add(body);
+            c1Model.add(lens);
+            c1Model.position.set(4, 0, 1);
+            scene.add(c1Model);
+        }
+
+        function animate3D() {
+            requestAnimationFrame(animate3D);
+
+            const delta = clock.getDelta();
+
+            if (mixer) {
+                mixer.update(delta);
+            }
+
+            if (drone) {
+                drone.rotation.y += 0.005;
+                drone.position.y = Math.sin(Date.now() * 0.001) * 0.3;
+            }
+
+            if (c1Model) {
+                c1Model.rotation.y += 0.01;
+                c1Model.position.y = Math.cos(Date.now() * 0.0012) * 0.2;
+            }
+
+            renderer.render(scene, camera);
+        }
+
+        // Intersection Observer for reveal animations
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.reveal').forEach(el => {
+            observer.observe(el);
+        });
+
+        // Animated counters
+        function animateCounter(element) {
+            const target = parseInt(element.dataset.target);
+            const duration = 2000;
+            const start = 0;
+            const increment = target / (duration / 16);
+            let current = start;
+
+            const timer = setInterval(() => {
+                current += increment;
+                element.textContent = Math.floor(current);
+                
+                if (current >= target) {
+                    element.textContent = target;
+                    clearInterval(timer);
+                }
+            }, 16);
+        }
+
+        // Trigger counters when visible
+        const counterObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    animateCounter(entry.target);
+                    counterObserver.unobserve(entry.target);
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.stat-number').forEach(counter => {
+            counterObserver.observe(counter);
+        });
+
+        // Mobile menu
+        document.getElementById('mobile-menu-button').addEventListener('click', () => {
+            document.getElementById('mobile-menu').classList.toggle('hidden');
+        });
+
+        // Pricing calculator
         let selections = {};
+        const steps = ['step1', 'step2', 'step3', 'results'];
 
-        document.querySelectorAll('.pricing-option').forEach(button => {
-            button.addEventListener('click', () => {
-                selections.core = button.getAttribute('data-value');
-                step1.classList.add('hidden');
-                step2.classList.remove('hidden');
+        function showStep(stepIndex) {
+            steps.forEach((step, index) => {
+                const element = document.getElementById(step);
+                if (index === stepIndex) {
+                    element.classList.remove('hidden');
+                    gsap.from(element, { duration: 0.5, opacity: 0, y: 20 });
+                } else {
+                    element.classList.add('hidden');
+                }
+            });
+        }
+
+        // Goal selection
+        document.querySelectorAll('.goal-card').forEach(card => {
+            card.addEventListener('click', () => {
+                selections.core = card.dataset.value;
+                showStep(1);
             });
         });
 
+        // Media coverage decision
         document.getElementById('add-media-yes').addEventListener('click', () => {
             selections.media = 'YES';
-            step2.classList.add('hidden');
-            step3.classList.remove('hidden');
+            showStep(2);
         });
 
         document.getElementById('add-media-no').addEventListener('click', () => {
             selections.media = 'NO';
-            step2.classList.add('hidden');
-            generateAndShowResults();
+            generateResults();
         });
 
+        // Generate plan
         document.getElementById('generate-plan-button').addEventListener('click', () => {
             selections.audience = document.getElementById('audience-size').value;
             selections.eventDuration = document.getElementById('event-duration').value;
             selections.editDuration = document.getElementById('edit-duration').value;
             selections.paymentPlan = document.getElementById('payment-plan').value;
-            step3.classList.add('hidden');
-            generateAndShowResults();
+            generateResults();
         });
 
-        function generateAndShowResults() {
-            // Generate Reference Number
+        function generateResults() {
+            // Generate reference number
             let ref = `NFZ-${selections.core}`;
-            let basePrice = 1500; // Default for 'FIX'
-            if (selections.core === 'BUILD') basePrice = 3000;
-
+            let basePrice = selections.core === 'BUILD' ? 3000 : 1500;
 
             if (selections.media === 'YES') {
                 ref += `-M-${selections.audience}-${selections.eventDuration}-${selections.editDuration}-${selections.paymentPlan}`;
-                 if(selections.audience === 'A2') basePrice += 500;
-                 if(selections.audience === 'A3') basePrice += 1500;
-                 if(selections.audience === 'A4') basePrice += 3000;
-                 if(selections.eventDuration === 'D2') basePrice += 800;
-                 if(selections.eventDuration === 'D3') basePrice += 2000;
-                 if(selections.editDuration === 'E2') basePrice += 400;
-                 if(selections.editDuration === 'E3') basePrice += 1200;
-                 if(selections.paymentPlan.includes('Y')) basePrice *= 11; // Annualized discount
+                
+                // Add pricing based on selections
+                const audiencePricing = { A1: 0, A2: 500, A3: 1500, A4: 3000 };
+                const durationPricing = { D1: 0, D2: 800, D3: 2000 };
+                const editPricing = { E1: 0, E2: 400, E3: 1200 };
+                
+                basePrice += audiencePricing[selections.audience] || 0;
+                basePrice += durationPricing[selections.eventDuration] || 0;
+                basePrice += editPricing[selections.editDuration] || 0;
+                
+                if (selections.paymentPlan.includes('Y')) {
+                    basePrice *= 11; // Annual multiplier with discount
+                }
             }
+
             ref += `-${Math.floor(1000 + Math.random() * 9000)}`;
-            document.getElementById('ref-number').textContent = ref;
             selections.ref = ref;
 
-            // Generate Price Estimate
-            let priceString = `$${basePrice.toLocaleString()}`;
-            if (selections.paymentPlan && selections.paymentPlan.includes('Y')) {
-                priceString += "/year";
+            // Display results
+            document.getElementById('ref-number').textContent = ref;
+            
+            let priceDisplay = `$${basePrice.toLocaleString()}`;
+            if (selections.paymentPlan?.includes('Y')) {
+                priceDisplay += '/year';
+            } else if (selections.paymentPlan === 'P1') {
+                priceDisplay = `$${(basePrice * 1.2).toLocaleString()} one-time`;
             } else {
-                priceString += "/month";
-                 if (selections.paymentPlan === 'P1') priceString = `$${(basePrice * 1.2).toLocaleString()} one-time`;
+                priceDisplay += '/month';
             }
-            document.getElementById('price-estimate').textContent = priceString;
-
-            results.classList.remove('hidden');
+            
+            document.getElementById('price-estimate').textContent = priceDisplay;
+            showStep(3);
         }
 
-        // Modal Logic
-        const leadCaptureModal = document.getElementById('lead-capture-modal');
+        // Modal handling
+        const leadModal = document.getElementById('lead-modal');
         const calendlyModal = document.getElementById('calendly-modal');
-        const bookCallButton = document.getElementById('book-call-button');
-        const closeLeadModal = document.getElementById('close-lead-modal');
-        const closeCalendlyModal = document.getElementById('close-calendly-modal');
-        const leadForm = document.getElementById('lead-form');
 
-        bookCallButton.addEventListener('click', () => {
-            leadCaptureModal.classList.remove('hidden');
+        document.getElementById('book-call-button').addEventListener('click', () => {
+            leadModal.classList.remove('hidden');
         });
 
-        closeLeadModal.addEventListener('click', () => {
-            leadCaptureModal.classList.add('hidden');
+        document.getElementById('close-lead-modal').addEventListener('click', () => {
+            leadModal.classList.add('hidden');
         });
-        
-        closeCalendlyModal.addEventListener('click', () => {
+
+        document.getElementById('close-calendly-modal').addEventListener('click', () => {
             calendlyModal.classList.add('hidden');
         });
-        
-        leadForm.addEventListener('submit', (e) => {
+
+        document.getElementById('lead-form').addEventListener('submit', (e) => {
             e.preventDefault();
             selections.name = document.getElementById('user-name').value;
             selections.email = document.getElementById('user-email').value;
-            console.log('Lead Captured:', selections);
-
+            
             document.getElementById('final-ref').textContent = selections.ref;
-            leadCaptureModal.classList.add('hidden');
+            leadModal.classList.add('hidden');
             calendlyModal.classList.remove('hidden');
-
-            // In a real app, you would send this data to a CRM or backend.
+            
+            console.log('Lead captured:', selections);
         });
 
-        // Scroll Animation Logic
-        const revealElements = document.querySelectorAll('.reveal');
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.classList.add('visible');
-                    // Optional: Unobserve after revealing to save resources.
-                    // If you want animations to re-trigger on scroll up, leave this commented.
-                    // observer.unobserve(entry.target);
-                }
-            });
-        }, {
-            threshold: 0.1 // Trigger when 10% of the element is visible
-        });
+        // Initialize 3D scene
+        init3D();
 
-        revealElements.forEach(element => {
-            observer.observe(element);
+        // Handle resize
+        window.addEventListener('resize', () => {
+            if (camera && renderer) {
+                camera.aspect = window.innerWidth / window.innerHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(window.innerWidth, window.innerHeight);
+            }
         });
     </script>
 </body>
 </html>
-
